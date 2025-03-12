@@ -1,54 +1,20 @@
+import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:catodo/features/auth/data/repositories/firebase_auth_repository.dart';
-import 'package:catodo/features/auth/presentation/pages/login_page.dart';
-import 'firebase_options.dart';
-import 'package:catodo/features/auth/domain/usecases/sign_in_with_google.dart';
-import 'package:catodo/features/auth/domain/usecases/sign_in_with_apple.dart';
-import 'package:catodo/features/auth/presentation/providers/auth_provider.dart'
-    as app_provider;
+import 'package:flame/flame.dart'; // Flame 초기화를 위해 추가
+import 'game/catodo_game.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Flame.device.fullScreen(); // 전체 화면 모드
+  await Flame.device.setLandscape(); // 가로 모드 강제
 
-  final firebaseAuth = firebase_auth.FirebaseAuth.instance;
-  final googleSignIn = GoogleSignIn();
-  final authRepository = FirebaseAuthRepository(firebaseAuth, googleSignIn);
-
+  final game = CatodoGame();
   runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (context) => app_provider.AuthProvider(
-            SignInWithGoogle(authRepository),
-            SignInWithApple(authRepository),
-            authRepository,
-          ),
-        ),
-      ],
-      child: const MyApp(),
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: GameWidget(
+        game: game,
+      ),
     ),
   );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Catodo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const LoginPage(),
-    );
-  }
 }
