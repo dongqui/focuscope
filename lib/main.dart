@@ -1,8 +1,7 @@
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/flame.dart'; // Flame 초기화를 위해 추가
-import 'game/catodo_game.dart';
-
+import 'package:catodo/features/village/presentation/world_manager.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Flame.device.fullScreen(); // 전체 화면 모드
