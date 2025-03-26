@@ -1,19 +1,31 @@
-import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:flame/flame.dart'; // Flame 초기화를 위해 추가
-import 'package:catodo/features/village/presentation/world_manager.dart';
+import 'package:flame/game.dart';
+import 'features/game/catodo_game.dart';
+import 'features/timer/presentation/widgets/timer_overlay.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Flame.device.fullScreen(); // 전체 화면 모드
-  await Flame.device.setLandscape(); // 가로 모드 강제
 
-  final game = CatodoGame();
-  runApp(
-    MaterialApp(
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: GameWidget(
-        game: game,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
       ),
-    ),
-  );
+      home: GameWidget<CatodoGame>(
+        game: CatodoGame(),
+        overlayBuilderMap: {
+          'timer': (context, game) => TimerOverlay(game: game),
+        },
+      ),
+    );
+  }
 }

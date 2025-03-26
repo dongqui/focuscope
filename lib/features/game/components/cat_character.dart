@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame/sprite.dart';
 import 'dart:math' as math;
 
 class CatCharacter extends SpriteAnimationComponent with HasGameRef {
@@ -16,17 +17,17 @@ class CatCharacter extends SpriteAnimationComponent with HasGameRef {
           4,
           (index) => Sprite(
                 spriteSheet,
-                srcSize: Vector2(64, 64), // 프레임 크기를 64x64로 수정
-                srcPosition: Vector2(index * 64, 0), // 프레임 간격도 64로 수정
+                srcSize: Vector2(64, 64),
+                srcPosition: Vector2(index * 64, 0),
               )),
       stepTime: 0.2,
     );
 
     // 캐릭터 크기 설정 (화면에 표시될 크기)
-    size = Vector2.all(64); // 실제 크기로 표시
+    size = Vector2.all(64);
 
     // 고양이를 바로 세우기 위해 90도 회전
-    angle = math.pi / 2; // 시계 반대 방향으로 90도 회전
+    angle = -math.pi / 2;
 
     // 초기 애니메이션 설정
     animation = _danceAnimation;
