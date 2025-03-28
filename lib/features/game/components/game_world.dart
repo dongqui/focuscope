@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
-import '../components/village_map.dart';
-import '../components/cat_character.dart';
+import 'village_map.dart';
+import 'cat_character.dart';
 
 class GameWorld extends World {
   late final VillageMap villageMap;

@@ -1,16 +1,22 @@
+import 'package:catodo/features/timer/presentation/viewmodels/timer_provider.dart';
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
+import 'package:flame_riverpod/flame_riverpod.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'world/game_world.dart';
-import '../timer/domain/timer_service.dart';
+import 'components/game_world.dart';
+import 'package:catodo/features/timer/data/models/timer_state.dart';
 
-class CatodoGame extends FlameGame
-    with ScrollDetector, ScaleDetector, TapDetector {
+class GameRoot extends FlameGame
+    with
+        ScrollDetector,
+        ScaleDetector,
+        TapDetector,
+        RiverpodGameMixin,
+        SingleGameInstance {
   late final GameWorld gameWorld;
   late final CameraComponent gameCamera;
-  late final TimerService timerService;
 
   // 줌 관련 설정
   static const double minZoom = 0.5;
@@ -24,9 +30,6 @@ class CatodoGame extends FlameGame
   Future<void> onLoad() async {
     await super.onLoad();
 
-    // 서비스 초기화
-    timerService = TimerService();
-
     // 게임 월드 설정
     gameWorld = GameWorld();
     gameCamera = CameraComponent(
@@ -36,41 +39,24 @@ class CatodoGame extends FlameGame
 
     // 컴포넌트 추가
     addAll([gameWorld, gameCamera]);
-
     // 오버레이 추가
     overlays.add('timer');
   }
 
   @override
-  void update(double dt) {
-    super.update(dt);
-    timerService.update(dt);
-
-    // 타이머 상태에 따른 고양이 상태 업데이트
-    _updateCatState();
+  void onMount() {
+    super.onMount();
+    addToGameWidgetBuild(() {
+      ref.listen(timerProvider, (previous, next) {
+        if (next.status == TimerStatus.idle ||
+            next.status == TimerStatus.paused) {
+          gameWorld.cat.stopDancing();
+        } else if (next.status == TimerStatus.running) {
+          gameWorld.cat.startDancing();
+        }
+      });
+    });
   }
-
-  void _updateCatState() {
-    switch (timerService.state.status) {
-      case TimerStatus.running:
-        gameWorld.cat.startDancing();
-        break;
-      case TimerStatus.idle:
-      case TimerStatus.paused:
-      case TimerStatus.completed:
-        gameWorld.cat.stopDancing();
-        break;
-    }
-  }
-
-  // 타이머 제어 메서드
-  void startTimer() => timerService.start();
-  void pauseTimer() => timerService.pause();
-  void resetTimer() => timerService.reset();
-
-  // 타이머 상태 접근자
-  String get timerText => timerService.state.displayText;
-  TimerState get timerState => timerService.state;
 
   @override
   void onScaleUpdate(ScaleUpdateInfo info) {

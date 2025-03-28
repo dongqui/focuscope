@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flame/sprite.dart';
 import 'dart:math' as math;
 
 class CatCharacter extends SpriteAnimationComponent with HasGameRef {
@@ -27,7 +26,7 @@ class CatCharacter extends SpriteAnimationComponent with HasGameRef {
     size = Vector2.all(64);
 
     // 고양이를 바로 세우기 위해 90도 회전
-    angle = -math.pi / 2;
+    angle = math.pi / 10;
 
     // 초기 애니메이션 설정
     animation = _danceAnimation;
