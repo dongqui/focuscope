@@ -1,5 +1,7 @@
 import 'package:flame/components.dart';
 import 'dart:math' as math;
+import 'package:catodo/features/game/events/game_event_bus.dart';
+import 'package:catodo/features/overlays/data/models/timer_state.dart';
 
 class CatCharacter extends SpriteAnimationComponent with HasGameRef {
   late final SpriteAnimation _danceAnimation;
@@ -28,21 +30,40 @@ class CatCharacter extends SpriteAnimationComponent with HasGameRef {
     // 고양이를 바로 세우기 위해 90도 회전
     angle = math.pi / 10;
 
-    // 초기 애니메이션 설정
-    animation = _danceAnimation;
+    // 이벤트 구독 설정
+    GameEventBus().stream.listen(_handleEvent);
+  }
+
+  void _handleEvent(GameEvent event) {
+    if (event is TimerStateChangedEvent) {
+      _updateAnimation(event.state);
+    }
+  }
+
+  void _updateAnimation(TimerState state) {
+    switch (state.status) {
+      case TimerStatus.running:
+        if (!_isDancing) {
+          startDancing();
+        }
+        break;
+      case TimerStatus.paused:
+      case TimerStatus.completed:
+      case TimerStatus.idle:
+        if (_isDancing) {
+          stopDancing();
+        }
+        break;
+    }
   }
 
   void startDancing() {
-    if (!_isDancing) {
-      _isDancing = true;
-      animation = _danceAnimation;
-    }
+    animation = _danceAnimation;
+    _isDancing = true;
   }
 
   void stopDancing() {
-    if (_isDancing) {
-      _isDancing = false;
-      animation = null;
-    }
+    animation = null;
+    _isDancing = false;
   }
 }

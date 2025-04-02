@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../viewmodels/timer_provider.dart';
+import '../viewmodels/timer_state.dart';
 import '../../data/models/timer_state.dart';
 
 class TimerOverlay extends ConsumerWidget {
@@ -8,8 +8,7 @@ class TimerOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final timerState = ref.watch(timerProvider);
-    final timerNotifier = ref.read(timerProvider.notifier);
+    final timerState = TimerState();
 
     return Column(
       children: [

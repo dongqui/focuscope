@@ -19,6 +19,6 @@ class VillageMap extends PositionComponent {
     position = -size / 2;
 
     // 맵 추가
-    add(_tiledMap);
+    await add(_tiledMap);
   }
 }
