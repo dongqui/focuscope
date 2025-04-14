@@ -1,16 +1,47 @@
-import '../../data/models/timer_state.dart';
 import 'dart:async';
 
+enum TimerStatus {
+  idle,
+  running,
+  paused,
+  completed,
+}
+
+class TimerState {
+  final int remainingTime;
+  final TimerStatus status;
+  final int totalTime;
+
+  const TimerState({
+    required this.remainingTime,
+    required this.status,
+    required this.totalTime,
+  });
+
+  TimerState copyWith({
+    int? remainingTime,
+    TimerStatus? status,
+    int? totalTime,
+  }) {
+    return TimerState(
+      remainingTime: remainingTime ?? this.remainingTime,
+      status: status ?? this.status,
+      totalTime: totalTime ?? this.totalTime,
+    );
+  }
+}
+
 class TimerManager {
+  static final TimerManager _instance = TimerManager._internal();
+  static TimerManager get instance => _instance;
+
   static const int defaultWorkTime = 25 * 60; // 25분
   static const int defaultBreakTime = 5 * 60; // 5분
   late Timer _timer;
   TimerState _state;
+  final List<void Function(TimerState)> _listeners = [];
 
-  // 상태 변경 콜백
-  final void Function(TimerState) onStateChanged;
-
-  TimerManager({required this.onStateChanged})
+  TimerManager._internal()
       : _state = const TimerState(
           remainingTime: defaultWorkTime,
           status: TimerStatus.idle,
@@ -18,6 +49,14 @@ class TimerManager {
         );
 
   TimerState get state => _state;
+
+  void addListener(void Function(TimerState) listener) {
+    _listeners.add(listener);
+  }
+
+  void removeListener(void Function(TimerState) listener) {
+    _listeners.remove(listener);
+  }
 
   void start() {
     if (_state.status == TimerStatus.idle ||
@@ -59,10 +98,13 @@ class TimerManager {
 
   void _updateState(TimerState newState) {
     _state = newState;
-    onStateChanged(_state);
+    for (final listener in _listeners) {
+      listener(_state);
+    }
   }
 
   void dispose() {
     _timer.cancel();
+    _listeners.clear();
   }
 }

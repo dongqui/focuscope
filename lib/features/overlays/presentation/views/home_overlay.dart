@@ -1,37 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:catodo/features/game/game_root.dart';
-import 'package:catodo/features/game/events/game_event_bus.dart';
+import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
 
 class HomeOverlay extends StatelessWidget {
-  final GameRoot game;
-
-  const HomeOverlay(this.game, {super.key});
+  const HomeOverlay({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: Stack(
         children: [
-          const Text(
-            '고양이와 함께하는 타이머',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+          // 중앙 시작 버튼
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 100),
+              child: ElevatedButton(
+                onPressed: () => TimerManager.instance.start(),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 40,
+                    vertical: 20,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                ),
+                child: const Text(
+                  '시작하기',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
           ),
-          const SizedBox(height: 40),
-          ElevatedButton.icon(
-            onPressed: () =>
-                game.emitGameEvent(TimerActionEvent(TimerAction.start)),
-            icon: const Icon(Icons.play_arrow),
-            label: const Text('타이머 시작'),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.white.withOpacity(0.2),
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              textStyle: const TextStyle(fontSize: 18),
+          // 하단 버튼들
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  onPressed: () {
+                    // TODO: 설정 화면으로 이동
+                  },
+                  icon: const Icon(
+                    Icons.settings,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(width: 40),
+                IconButton(
+                  onPressed: () {
+                    // TODO: 통계 화면으로 이동
+                  },
+                  icon: const Icon(
+                    Icons.bar_chart,
+                    color: Colors.white,
+                    size: 32,
+                  ),
+                ),
+              ],
             ),
           ),
         ],

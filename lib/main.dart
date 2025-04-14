@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flame_riverpod/flame_riverpod.dart';
 import 'features/game/game_root.dart';
-import 'features/overlays/presentation/widgets/timer_overlay.dart';
-import 'features/overlays/presentation/widgets/home_overlay.dart';
+import 'features/overlays/presentation/views/timer_overlay.dart';
+import 'features/overlays/presentation/views/home_overlay.dart';
+import 'package:catodo/features/game/game_overlay_manager.dart';
 
 void main() {
   runApp(
@@ -32,10 +33,8 @@ class MyApp extends ConsumerWidget {
           key: GlobalKey<RiverpodAwareGameWidgetState<GameRoot>>(),
           game: _game, // 미리 생성한 인스턴스 사용
           overlayBuilderMap: {
-            'home': (context, game) => const HomeOverlay(),
-            'timer': (context, game) => const TimerOverlay(),
-            'pause': (context, game) => const SizedBox(),
-            'done': (context, game) => const SizedBox(),
+            GameOverlay.home.name: (context, game) => const HomeOverlay(),
+            GameOverlay.timer.name: (context, game) => const TimerOverlay(),
           },
           initialActiveOverlays: ['home'],
         ),

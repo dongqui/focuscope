@@ -1,90 +1,131 @@
 import 'package:flutter/material.dart';
-import 'package:catodo/features/game/game_root.dart';
-import 'package:catodo/features/overlays/data/models/timer_state.dart';
-import 'package:catodo/features/game/events/game_event_bus.dart';
+import '../viewmodels/timer_state.dart';
 
-class TimerOverlay extends StatelessWidget {
-  final GameRoot game;
+class TimerOverlay extends StatefulWidget {
+  const TimerOverlay({super.key});
 
-  const TimerOverlay(this.game, {super.key});
+  @override
+  State<TimerOverlay> createState() => _TimerOverlayState();
+}
+
+class _TimerOverlayState extends State<TimerOverlay> {
+  late TimerState _timerState;
+  final _timerManager = TimerManager.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _timerState = _timerManager.state;
+    _timerManager.addListener(_handleTimerStateChanged);
+  }
+
+  @override
+  void dispose() {
+    _timerManager.removeListener(_handleTimerStateChanged);
+    super.dispose();
+  }
+
+  void _handleTimerStateChanged(TimerState state) {
+    setState(() {
+      _timerState = state;
+    });
+  }
+
+  String _formatTime(int seconds) {
+    final minutes = seconds ~/ 60;
+    final remainingSeconds = seconds % 60;
+    return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
+  }
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<GameEvent>(
-      stream: GameEventBus().stream,
-      builder: (context, snapshot) {
-        final gameState = game.gameState.currentState;
-
-        return _buildTimerUI(context, gameState);
-      },
-    );
-  }
-
-  Widget _buildTimerUI(BuildContext context, TimerState state) {
-    final minutes = (state.remainingTime / 60).floor();
-    final seconds = state.remainingTime % 60;
-    final formattedTime =
-        '${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            formattedTime,
-            style: const TextStyle(
-              fontSize: 48,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+    return Column(
+      children: [
+        // 타이머 디스플레이
+        Container(
+          padding: const EdgeInsets.all(20),
+          margin: const EdgeInsets.only(top: 40),
+          decoration: BoxDecoration(
+            color: const Color.fromRGBO(0, 0, 0, 0.5),
+            borderRadius: BorderRadius.circular(20),
           ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          child: Column(
             children: [
-              if (state.status == TimerStatus.running)
-                _buildButton(
-                  context,
-                  '일시정지',
-                  Icons.pause,
-                  () => game.emitGameEvent(TimerActionEvent(TimerAction.pause)),
-                )
-              else if (state.status == TimerStatus.paused)
-                _buildButton(
-                  context,
-                  '재시작',
-                  Icons.play_arrow,
-                  () => game.emitGameEvent(TimerActionEvent(TimerAction.start)),
+              Text(
+                _formatTime(_timerState.remainingTime),
+                style: const TextStyle(
+                  fontSize: 48,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
                 ),
-              const SizedBox(width: 20),
-              _buildButton(
-                context,
-                '초기화',
-                Icons.refresh,
-                () => game.emitGameEvent(TimerActionEvent(TimerAction.reset)),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                getStatusText(_timerState.status),
+                style: const TextStyle(
+                  fontSize: 24,
+                  color: Colors.white70,
+                ),
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        const Spacer(),
+        // 타이머 컨트롤
+        Padding(
+          padding: const EdgeInsets.only(bottom: 40),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: _timerManager.start,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('시작'),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: _timerManager.pause,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.orange,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('일시정지'),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: _timerManager.reset,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('리셋'),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
-  Widget _buildButton(
-    BuildContext context,
-    String label,
-    IconData icon,
-    VoidCallback onPressed,
-  ) {
-    return ElevatedButton.icon(
-      onPressed: onPressed,
-      icon: Icon(icon),
-      label: Text(label),
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Colors.white.withOpacity(0.2),
-        foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      ),
-    );
+  String getStatusText(TimerStatus status) {
+    switch (status) {
+      case TimerStatus.idle:
+        return '준비';
+      case TimerStatus.running:
+        return '집중 중';
+      case TimerStatus.paused:
+        return '일시정지';
+      case TimerStatus.completed:
+        return '완료!';
+    }
   }
 }
