@@ -15,7 +15,7 @@ class HomeOverlay extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.only(bottom: 100),
               child: ElevatedButton(
-                onPressed: () => TimerManager.instance.start(),
+                onPressed: () => TimerManager.instance.readyToFocus(),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black,

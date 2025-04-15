@@ -4,6 +4,7 @@ enum TimerStatus {
   idle,
   running,
   paused,
+  input,
   completed,
 }
 
@@ -66,13 +67,14 @@ class TimerManager {
   }
 
   void start() {
-    if (_state.status == TimerStatus.idle ||
-        _state.status == TimerStatus.paused) {
-      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-        _updateRemainingTime();
-      });
-      _updateState(_state.copyWith(status: TimerStatus.running));
-    }
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      _updateRemainingTime();
+    });
+    _updateState(_state.copyWith(status: TimerStatus.running));
+  }
+
+  void readyToFocus() {
+    _updateState(_state.copyWith(status: TimerStatus.input));
   }
 
   void pause() {
@@ -89,6 +91,10 @@ class TimerManager {
       status: TimerStatus.idle,
       totalTime: defaultWorkTime,
     ));
+  }
+
+  void cancel() {
+    _updateState(_state.copyWith(status: TimerStatus.idle));
   }
 
   void _updateRemainingTime() {

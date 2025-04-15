@@ -4,6 +4,7 @@ import 'package:flame/game.dart';
 enum GameOverlay {
   home,
   timer,
+  form,
 }
 
 class GameOverlayManager {
@@ -12,10 +13,13 @@ class GameOverlayManager {
   GameOverlayManager._internal();
 
   onChangeTimerState(TimerStatus status, FlameGame game) {
-    game.overlays
-      ..clear()
-      ..add(status == TimerStatus.idle
-          ? GameOverlay.home.name
-          : GameOverlay.timer.name);
+    game.overlays.clear();
+    if (status == TimerStatus.idle) {
+      game.overlays.add(GameOverlay.home.name);
+    } else if (status == TimerStatus.running || status == TimerStatus.paused) {
+      game.overlays.add(GameOverlay.timer.name);
+    } else if (status == TimerStatus.input) {
+      game.overlays.add(GameOverlay.form.name);
+    }
   }
 }

@@ -10,8 +10,8 @@ class GameVillageManager {
   onChangeTimerState(TimerStatus status, FlameGame game) {
     final gameRoot = game as GameRoot;
     final cat = gameRoot.gameWorld.cat;
-    
-    if (status == TimerStatus.idle || status == TimerStatus.running) {
+
+    if (status == TimerStatus.running) {
       cat.dance();
     } else {
       cat.sleep();

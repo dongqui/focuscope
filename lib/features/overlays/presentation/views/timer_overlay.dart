@@ -126,6 +126,8 @@ class _TimerOverlayState extends State<TimerOverlay> {
         return '일시정지';
       case TimerStatus.completed:
         return '완료!';
+      default:
+        return '';
     }
   }
 }

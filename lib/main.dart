@@ -3,6 +3,7 @@ import 'package:flame/game.dart';
 import 'features/game/game_root.dart';
 import 'features/overlays/presentation/views/timer_overlay.dart';
 import 'features/overlays/presentation/views/home_overlay.dart';
+import 'features/overlays/presentation/views/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 
 void main() {
@@ -26,6 +27,7 @@ class MyApp extends StatelessWidget {
           overlayBuilderMap: {
             GameOverlay.home.name: (context, game) => const HomeOverlay(),
             GameOverlay.timer.name: (context, game) => const TimerOverlay(),
+            GameOverlay.form.name: (context, game) => const FormOverlay(),
           },
           initialActiveOverlays: const ['home'],
         ),
