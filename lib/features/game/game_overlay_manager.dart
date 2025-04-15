@@ -11,10 +11,10 @@ class GameOverlayManager {
   static GameOverlayManager get instance => _instance;
   GameOverlayManager._internal();
 
-  onChangeTimerState(TimerState state, FlameGame game) {
+  onChangeTimerState(TimerStatus status, FlameGame game) {
     game.overlays
       ..clear()
-      ..add(state.status == TimerStatus.idle
+      ..add(status == TimerStatus.idle
           ? GameOverlay.home.name
           : GameOverlay.timer.name);
   }

@@ -39,7 +39,10 @@ class TimerManager {
   static const int defaultBreakTime = 5 * 60; // 5분
   late Timer _timer;
   TimerState _state;
+  late TimerStatus _prevStatus = TimerStatus.idle;
+
   final List<void Function(TimerState)> _listeners = [];
+  final List<void Function(TimerStatus)> _listenersToStatus = [];
 
   TimerManager._internal()
       : _state = const TimerState(
@@ -52,6 +55,10 @@ class TimerManager {
 
   void addListener(void Function(TimerState) listener) {
     _listeners.add(listener);
+  }
+
+  void addListenerToStatus(void Function(TimerStatus) listener) {
+    _listenersToStatus.add(listener);
   }
 
   void removeListener(void Function(TimerState) listener) {
@@ -101,10 +108,19 @@ class TimerManager {
     for (final listener in _listeners) {
       listener(_state);
     }
+
+    if (_state.status != _prevStatus) {
+      _prevStatus = newState.status;
+
+      for (final listener in _listenersToStatus) {
+        listener(_state.status);
+      }
+    }
   }
 
   void dispose() {
     _timer.cancel();
     _listeners.clear();
+    _listenersToStatus.clear();
   }
 }

@@ -1,19 +1,13 @@
 import 'package:flame/game.dart';
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
-import 'package:flame_riverpod/flame_riverpod.dart';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'components/game_world.dart';
 import 'events/game_event_manager.dart';
 
 class GameRoot extends FlameGame
-    with
-        ScrollDetector,
-        ScaleDetector,
-        TapDetector,
-        RiverpodGameMixin,
-        SingleGameInstance {
+    with ScrollDetector, ScaleDetector, TapDetector, SingleGameInstance {
   late final GameWorld gameWorld;
   late final CameraComponent gameCamera;
   late final GameEventManager gameEventManager;
@@ -34,21 +28,17 @@ class GameRoot extends FlameGame
     gameEventManager = GameEventManager();
     // 게임 월드 설정
     gameWorld = GameWorld();
+
+    // 카메라 설정
     gameCamera = CameraComponent(
       world: gameWorld,
-    )..viewfinder.anchor = Anchor.center;
+    )..viewfinder.anchor = Anchor.topLeft;
+
+    // 카메라 줌 설정
     gameCamera.viewfinder.zoom = defaultZoom;
 
     // 컴포넌트 추가
-    await addAll([gameEventManager, gameWorld, gameCamera]);
-  }
-
-  @override
-  void onMount() {
-    super.onMount();
-    addToGameWidgetBuild(() {
-      // 이벤트 구독 설정
-    });
+    await addAll([gameWorld, gameCamera, gameEventManager]);
   }
 
   @override

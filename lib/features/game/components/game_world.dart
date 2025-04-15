@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'village_map.dart';
 import 'cat_character.dart';
 
-class GameWorld extends World {
+class GameWorld extends World with HasGameRef {
   late final VillageMap villageMap;
   late final CatCharacter cat;
 
@@ -14,7 +14,9 @@ class GameWorld extends World {
 
     // 고양이 생성 및 추가
     cat = CatCharacter();
-    cat.position = Vector2.zero(); // 고양이를 화면 중앙에 배치
+    // 화면 중앙에 배치 (카메라 뷰포트 기준)
+    cat.position = Vector2(100, 100); // 화면 중앙 좌표로 설정
+    cat.size = Vector2.all(64); // 크기를 2배로 키움
     await add(cat);
   }
 
