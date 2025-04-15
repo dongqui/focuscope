@@ -1,27 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flame_riverpod/flame_riverpod.dart';
+import 'package:flame/game.dart';
 import 'features/game/game_root.dart';
 import 'features/overlays/presentation/views/timer_overlay.dart';
 import 'features/overlays/presentation/views/home_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 
 void main() {
-  runApp(
-    ProviderScope(
-      child: MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
-class MyApp extends ConsumerWidget {
-  MyApp({super.key});
-
-  // 게임 인스턴스를 한 번만 생성
-  final _game = GameRoot();
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Catodo',
       theme: ThemeData(
@@ -29,14 +21,13 @@ class MyApp extends ConsumerWidget {
         useMaterial3: true,
       ),
       home: Scaffold(
-        body: RiverpodAwareGameWidget(
-          key: GlobalKey<RiverpodAwareGameWidgetState<GameRoot>>(),
-          game: _game, // 미리 생성한 인스턴스 사용
+        body: GameWidget(
+          game: GameRoot(),
           overlayBuilderMap: {
             GameOverlay.home.name: (context, game) => const HomeOverlay(),
             GameOverlay.timer.name: (context, game) => const TimerOverlay(),
           },
-          initialActiveOverlays: ['home'],
+          initialActiveOverlays: const ['home'],
         ),
       ),
     );
