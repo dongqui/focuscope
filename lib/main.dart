@@ -6,12 +6,13 @@ import 'features/overlays/presentation/views/home_overlay.dart';
 import 'features/overlays/presentation/views/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  MyApp({super.key});
+  final game = GameRoot();
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +24,13 @@ class MyApp extends StatelessWidget {
       ),
       home: Scaffold(
         body: GameWidget(
-          game: GameRoot(),
+          game: game,
           overlayBuilderMap: {
             GameOverlay.home.name: (context, game) => const HomeOverlay(),
             GameOverlay.timer.name: (context, game) => const TimerOverlay(),
             GameOverlay.form.name: (context, game) => const FormOverlay(),
           },
-          initialActiveOverlays: const ['home'],
+          initialActiveOverlays: const ['form'],
         ),
       ),
     );
