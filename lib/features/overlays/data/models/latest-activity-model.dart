@@ -5,27 +5,27 @@ part 'latest-activity-model.g.dart';
 @Collection()
 class LatestActivity {
   Id id = Isar.autoIncrement;
-  final String description;
+  final String name;
   final DateTime timestamp;
   bool hasDeleted = false;
 
   LatestActivity({
     required this.id,
-    required this.description,
+    required this.name,
     required this.timestamp,
   });
 
   // JSON serialization/deserialization methods
   Map<String, dynamic> toJson() => {
         'id': id,
-        'description': description,
+        'name': name,
         'timestamp': timestamp.toIso8601String(),
       };
 
   factory LatestActivity.fromJson(Map<String, dynamic> json) {
     return LatestActivity(
       id: json['id'],
-      description: json['description'],
+      name: json['name'],
       timestamp: DateTime.parse(json['timestamp']),
     );
   }

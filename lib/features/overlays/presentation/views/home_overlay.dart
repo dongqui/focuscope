@@ -46,9 +46,7 @@ class HomeOverlay extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  onPressed: () {
-                    // TODO: 설정 화면으로 이동
-                  },
+                  onPressed: () {},
                   icon: const Icon(
                     Icons.settings,
                     color: Colors.white,
@@ -57,9 +55,7 @@ class HomeOverlay extends StatelessWidget {
                 ),
                 const SizedBox(width: 40),
                 IconButton(
-                  onPressed: () {
-                    // TODO: 통계 화면으로 이동
-                  },
+                  onPressed: () {},
                   icon: const Icon(
                     Icons.bar_chart,
                     color: Colors.white,

@@ -5,8 +5,12 @@ import 'features/overlays/presentation/views/timer_overlay.dart';
 import 'features/overlays/presentation/views/home_overlay.dart';
 import 'features/overlays/presentation/views/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
+import 'package:catodo/core/db.dart';
+import 'features/overlays/presentation/views/focus_end_overlay.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DatabaseService.instance.setUpDB();
   runApp(MyApp());
 }
 
@@ -29,6 +33,8 @@ class MyApp extends StatelessWidget {
             GameOverlay.home.name: (context, game) => const HomeOverlay(),
             GameOverlay.timer.name: (context, game) => const TimerOverlay(),
             GameOverlay.form.name: (context, game) => const FormOverlay(),
+            GameOverlay.focusEnd.name: (context, game) =>
+                const FocusEndOverlay(),
           },
           initialActiveOverlays: const ['form'],
         ),

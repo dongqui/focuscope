@@ -1,33 +1,35 @@
 import 'dart:async';
 
+import 'package:catodo/constants/index.dart';
+
 enum TimerStatus {
   idle,
   running,
   paused,
   input,
-  completed,
+  end,
 }
 
 class TimerState {
-  final int remainingTime;
+  final int focussedTime;
   final TimerStatus status;
-  final int totalTime;
+  final int goalTime;
 
   const TimerState({
-    required this.remainingTime,
+    required this.focussedTime,
     required this.status,
-    required this.totalTime,
+    required this.goalTime,
   });
 
   TimerState copyWith({
-    int? remainingTime,
+    int? focussedTime,
     TimerStatus? status,
-    int? totalTime,
+    int? goalTime,
   }) {
     return TimerState(
-      remainingTime: remainingTime ?? this.remainingTime,
+      focussedTime: focussedTime ?? this.focussedTime,
       status: status ?? this.status,
-      totalTime: totalTime ?? this.totalTime,
+      goalTime: goalTime ?? this.goalTime,
     );
   }
 }
@@ -36,8 +38,6 @@ class TimerManager {
   static final TimerManager _instance = TimerManager._internal();
   static TimerManager get instance => _instance;
 
-  static const int defaultWorkTime = 25 * 60; // 25분
-  static const int defaultBreakTime = 5 * 60; // 5분
   late Timer _timer;
   TimerState _state;
   late TimerStatus _prevStatus = TimerStatus.idle;
@@ -47,9 +47,9 @@ class TimerManager {
 
   TimerManager._internal()
       : _state = const TimerState(
-          remainingTime: defaultWorkTime,
+          focussedTime: 0,
           status: TimerStatus.idle,
-          totalTime: defaultWorkTime,
+          goalTime: DEFAULT_WORK_TIME,
         );
 
   TimerState get state => _state;
@@ -68,7 +68,7 @@ class TimerManager {
 
   void start() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      _updateRemainingTime();
+      _updatefocussedTime();
     });
     _updateState(_state.copyWith(status: TimerStatus.running));
   }
@@ -84,12 +84,20 @@ class TimerManager {
     }
   }
 
-  void reset() {
+  void finish() {
     _timer.cancel();
     _updateState(const TimerState(
-      remainingTime: defaultWorkTime,
-      status: TimerStatus.idle,
-      totalTime: defaultWorkTime,
+      focussedTime: 0,
+      status: TimerStatus.end,
+      goalTime: DEFAULT_WORK_TIME,
+    ));
+  }
+
+  void save() {
+    _updateState(_state.copyWith(
+      status: TimerStatus.input,
+      focussedTime: 0,
+      goalTime: DEFAULT_WORK_TIME,
     ));
   }
 
@@ -97,15 +105,18 @@ class TimerManager {
     _updateState(_state.copyWith(status: TimerStatus.idle));
   }
 
-  void _updateRemainingTime() {
-    final newRemainingTime = _state.remainingTime - 1;
-    if (newRemainingTime <= 0) {
+  void updateGoalTime(int goalTime) {
+    _updateState(_state.copyWith(goalTime: goalTime));
+  }
+
+  void _updatefocussedTime() {
+    final newfocussedTime = _state.focussedTime + 1;
+    if (newfocussedTime >= _state.goalTime) {
       _updateState(_state.copyWith(
-        remainingTime: 0,
-        status: TimerStatus.completed,
+        status: TimerStatus.end,
       ));
     } else {
-      _updateState(_state.copyWith(remainingTime: newRemainingTime));
+      _updateState(_state.copyWith(focussedTime: newfocussedTime));
     }
   }
 

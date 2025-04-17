@@ -27,18 +27,18 @@ class DatabaseService {
   }
 
   Isar get isar => _isar!;
-}
 
-void setUpDB() async {
-  await DatabaseService.instance.init();
+  Future<void> setUpDB() async {
+    await DatabaseService.instance.init();
 
-  final isar = DatabaseService.instance.isar;
+    final isar = DatabaseService.instance.isar;
 
-  // datasource
-  final focusSessionDataSource = FocusSessionDataSource(isar);
-  final latestActivityDataSource = LatestActivityDataSource(isar);
+    // datasource
+    final focusSessionDataSource = FocusSessionDataSource(isar);
+    final latestActivityDataSource = LatestActivityDataSource(isar);
 
-  // repository
-  FocusSessionRepository(focusSessionDataSource);
-  LatestActivityRepository(latestActivityDataSource);
+    // repository
+    FocusSessionRepository.initialize(focusSessionDataSource);
+    LatestActivityRepository.initialize(latestActivityDataSource);
+  }
 }

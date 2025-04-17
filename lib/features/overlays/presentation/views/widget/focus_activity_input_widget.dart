@@ -1,15 +1,43 @@
 import 'package:flutter/material.dart';
+import 'package:catodo/features/overlays/presentation/viewmodels/form_state.dart';
 
-class FocusInputWidget extends StatefulWidget {
-  const FocusInputWidget({super.key});
+class FocusActivityInputWidget extends StatefulWidget {
+  const FocusActivityInputWidget({super.key});
 
   @override
-  State<FocusInputWidget> createState() => _State();
+  State<FocusActivityInputWidget> createState() => _State();
 }
 
-class _State extends State<FocusInputWidget> {
+class _State extends State<FocusActivityInputWidget> {
   final TextEditingController _focusTextController = TextEditingController();
-  final List<String> _tags = ['수학 문제 풀기', '영어 단어 외우기', '독서', '코딩', '운동'];
+  late List<String> _tags = [];
+
+  @override
+  void initState() {
+    super.initState();
+    FormManager.instance.addListener(_onFormStateChanged);
+    initTags();
+  }
+
+  @override
+  void dispose() {
+    // 리스너 제거
+    FormManager.instance.removeListener(_onFormStateChanged);
+    _focusTextController.dispose();
+    super.dispose();
+  }
+
+  void _onFormStateChanged(FocusForm state) {
+    print('state: ${state.activity}');
+    _focusTextController.text = state.activity;
+  }
+
+  void initTags() async {
+    final tags = await FormManager.instance.getLatestActivities();
+    setState(() {
+      _tags = tags.map((tag) => tag.name).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +53,9 @@ class _State extends State<FocusInputWidget> {
         ),
         TextField(
           controller: _focusTextController,
+          onChanged: (text) {
+            FormManager.instance.updateActivity(text);
+          },
           decoration: const InputDecoration(
             hintText: '예: 수학 문제 풀기, 영어 단어 외우기',
             border: UnderlineInputBorder(),
@@ -39,8 +70,9 @@ class _State extends State<FocusInputWidget> {
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: GestureDetector(
                         onTap: () {
+                          print('tag: $tag');
                           setState(() {
-                            _focusTextController.text = tag;
+                            FormManager.instance.updateActivity(tag);
                           });
                         },
                         child: Chip(
@@ -61,4 +93,3 @@ class _State extends State<FocusInputWidget> {
     );
   }
 }
-

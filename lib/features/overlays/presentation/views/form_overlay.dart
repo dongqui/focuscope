@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
-import 'package:catodo/features/overlays/presentation/views/widget/focus_input_widget.dart';
+import 'package:catodo/features/overlays/presentation/views/widget/focus_activity_input_widget.dart';
+import 'package:catodo/features/overlays/presentation/views/widget/focus_time_input_widget.dart';
 
 class FormOverlay extends StatefulWidget {
   const FormOverlay({super.key});
@@ -14,7 +15,6 @@ class _FormOverlayState extends State<FormOverlay>
   late final AnimationController _controller;
   late final Animation<Offset> _offsetAnimation;
   final _focusTextController = TextEditingController();
-  int _selectedMinutes = 25;
 
   @override
   void initState() {
@@ -66,36 +66,10 @@ class _FormOverlayState extends State<FormOverlay>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const FocusInputWidget(),
+                    const FocusActivityInputWidget(),
                     const SizedBox(height: 20),
-                    const Text(
-                      '집중 시간',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    DropdownButtonFormField<int>(
-                      value: _selectedMinutes,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [15, 25, 30, 45, 60].map((minutes) {
-                        return DropdownMenuItem(
-                          value: minutes,
-                          child: Text('$minutes 분'),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        if (value != null) {
-                          setState(() {
-                            _selectedMinutes = value;
-                          });
-                        }
-                      },
-                    ),
                     const Spacer(),
+                    const FocusTimeInputWidget(),
                     Hero(
                       tag: 'start_button',
                       child: ElevatedButton(

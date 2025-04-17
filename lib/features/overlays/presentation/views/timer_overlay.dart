@@ -52,7 +52,7 @@ class _TimerOverlayState extends State<TimerOverlay> {
           child: Column(
             children: [
               Text(
-                _formatTime(_timerState.remainingTime),
+                _formatTime(_timerState.focussedTime),
                 style: const TextStyle(
                   fontSize: 48,
                   color: Colors.white,
@@ -100,7 +100,7 @@ class _TimerOverlayState extends State<TimerOverlay> {
               ),
               const SizedBox(width: 20),
               ElevatedButton(
-                onPressed: _timerManager.reset,
+                onPressed: _timerManager.finish,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   foregroundColor: Colors.white,
@@ -124,7 +124,7 @@ class _TimerOverlayState extends State<TimerOverlay> {
         return '집중 중';
       case TimerStatus.paused:
         return '일시정지';
-      case TimerStatus.completed:
+      case TimerStatus.end:
         return '완료!';
       default:
         return '';
