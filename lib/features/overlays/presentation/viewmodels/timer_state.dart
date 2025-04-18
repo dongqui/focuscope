@@ -86,10 +86,8 @@ class TimerManager {
 
   void finish() {
     _timer.cancel();
-    _updateState(const TimerState(
-      focussedTime: 0,
+    _updateState(_state.copyWith(
       status: TimerStatus.end,
-      goalTime: DEFAULT_WORK_TIME,
     ));
   }
 
