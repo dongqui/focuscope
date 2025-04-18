@@ -28,7 +28,6 @@ class _State extends State<FocusActivityInputWidget> {
   }
 
   void _onFormStateChanged(FocusForm state) {
-    print('state: ${state.activity}');
     _focusTextController.text = state.activity;
   }
 
@@ -70,7 +69,6 @@ class _State extends State<FocusActivityInputWidget> {
                       padding: const EdgeInsets.symmetric(horizontal: 4.0),
                       child: GestureDetector(
                         onTap: () {
-                          print('tag: $tag');
                           setState(() {
                             FormManager.instance.updateActivity(tag);
                           });

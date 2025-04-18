@@ -15,7 +15,8 @@ class _FocusEndOverlayState extends State<FocusEndOverlay> {
     return Center(
       child: ElevatedButton(
         onPressed: () {
-          FormManager.instance.save(TimerManager.instance.state.focussedTime);
+          int focussedTime = TimerManager.instance.state.focussedTime;
+          FormManager.instance.save(focussedTime);
           TimerManager.instance.save();
         },
         child: Text('확인'),
