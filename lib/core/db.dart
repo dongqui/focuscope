@@ -5,7 +5,9 @@ import 'package:catodo/features/overlays/data/models/latest-activity-model.dart'
 import 'package:catodo/features/overlays/data/datasources/focus_session_datasource.dart';
 import 'package:catodo/features/overlays/data/datasources/latest-activity-datasource.dart';
 import 'package:catodo/features/overlays/data/repositories/focus_session_repository.dart';
-import 'package:catodo/features/overlays/data/repositories/latest-activity-repository.dart';
+import 'package:catodo/features/overlays/data/repositories/latest_activity_repository.dart';
+import 'package:catodo/features/audio/data/datasources/audio_datasource.dart';
+import 'package:catodo/features/audio/data/repositories/audio_repository.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -36,9 +38,11 @@ class DatabaseService {
     // datasource
     final focusSessionDataSource = FocusSessionDataSource(isar);
     final latestActivityDataSource = LatestActivityDataSource(isar);
+    final audioDataSource = AudioDataSource(isar);
 
     // repository
     FocusSessionRepository.initialize(focusSessionDataSource);
     LatestActivityRepository.initialize(latestActivityDataSource);
+    AudioRepository.initialize(audioDataSource);
   }
 }
