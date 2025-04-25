@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../viewmodels/timer_state.dart';
+import '../../viewmodels/timer_state.dart';
 
 class TimerOverlay extends StatefulWidget {
   const TimerOverlay({super.key});
@@ -108,6 +108,17 @@ class _TimerOverlayState extends State<TimerOverlay> {
                       const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 ),
                 child: const Text('리셋'),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: _timerManager.finish,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('음악'),
               ),
             ],
           ),

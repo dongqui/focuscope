@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'features/game/game_root.dart';
-import 'features/overlays/presentation/views/timer_overlay.dart';
+import 'features/overlays/presentation/views/timer_overlay/timer_overlay.dart';
 import 'features/overlays/presentation/views/home_overlay.dart';
-import 'features/overlays/presentation/views/form_overlay.dart';
+import 'features/overlays/presentation/views/form_overlay/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 import 'package:catodo/core/db.dart';
 import 'features/overlays/presentation/views/focus_end_overlay.dart';
