@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
-import 'package:catodo/features/overlays/presentation/views/widget/focus_activity_input_widget.dart';
-import 'package:catodo/features/overlays/presentation/views/widget/focus_time_input_widget.dart';
+import 'package:catodo/features/overlays/presentation/views/form_overlay/focus_activity_input_widget.dart';
+import 'package:catodo/features/overlays/presentation/views/form_overlay/focus_time_input_widget.dart';
 
 class FormOverlay extends StatefulWidget {
   const FormOverlay({super.key});

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class MusicSetting extends StatefulWidget {
-  const MusicSetting({super.key});
+class MusicBox extends StatefulWidget {
+  const MusicBox({super.key});
 
   @override
-  _MusicSettingState createState() => _MusicSettingState();
+  _MusicBoxState createState() => _MusicBoxState();
 }
 
-class _MusicSettingState extends State<MusicSetting> {
+class _MusicBoxState extends State<MusicBox> {
   bool isMusicOn = false;
   Map<String, bool> whiteNoiseOptions = {
     'Rain': false,
