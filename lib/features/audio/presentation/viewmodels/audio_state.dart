@@ -41,7 +41,7 @@ class AudioManager extends Observer<AudioState> {
 
   AudioState get state => _state;
 
-  Future<void> getAudio() async {
+  Future<void> getAudioList() async {
     final audio = await AudioRepository.instance.getOrCreateAudio();
     _updateState(_state.copyWith(
       whiteNoise: audio.whiteNoise,
@@ -67,6 +67,15 @@ class AudioManager extends Observer<AudioState> {
       isMusicOn: updatedAudio.isMusicOn,
     ));
     await AudioRepository.instance.updateAudio(updatedAudio);
+  }
+
+  void updateWhiteNoise(String key, bool value) {
+    if (value == true) {
+      updateAudio(whiteNoise: [..._state.whiteNoise, key]);
+    } else {
+      updateAudio(
+          whiteNoise: _state.whiteNoise.where((e) => e != key).toList());
+    }
   }
 
   void _updateState(AudioState state) {

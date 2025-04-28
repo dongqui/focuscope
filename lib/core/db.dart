@@ -8,6 +8,7 @@ import 'package:catodo/features/overlays/data/repositories/focus_session_reposit
 import 'package:catodo/features/overlays/data/repositories/latest_activity_repository.dart';
 import 'package:catodo/features/audio/data/datasources/audio_datasource.dart';
 import 'package:catodo/features/audio/data/repositories/audio_repository.dart';
+import 'package:catodo/features/audio/data/models/audio_model.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -20,7 +21,7 @@ class DatabaseService {
     final dir = await getApplicationDocumentsDirectory();
     if (Isar.instanceNames.isEmpty) {
       _isar = await Isar.open(
-        [FocusSessionSchema, LatestActivitySchema],
+        [FocusSessionSchema, LatestActivitySchema, AudioSchema],
         directory: dir.path,
       );
     } else {
