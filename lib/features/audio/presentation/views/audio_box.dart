@@ -1,4 +1,3 @@
-import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:catodo/features/audio/presentation/viewmodels/audio_state.dart';
 import 'package:catodo/features/audio/presentation/viewmodels/audio_controller.dart';
@@ -8,14 +7,14 @@ final List<AudioType> audioList = [
   AudioType.birds,
 ];
 
-class MusicBox extends StatefulWidget {
-  const MusicBox({super.key});
+class AudioBox extends StatefulWidget {
+  const AudioBox({super.key});
 
   @override
-  State<MusicBox> createState() => _MusicBoxState();
+  State<AudioBox> createState() => _AudioBoxState();
 }
 
-class _MusicBoxState extends State<MusicBox> {
+class _AudioBoxState extends State<AudioBox> {
   final AudioController audioController = AudioController();
 
   @override
