@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../viewmodels/timer_state.dart';
+import 'package:catodo/features/audio/presentation/views/audio_box.dart';
 
 class TimerOverlay extends StatefulWidget {
   const TimerOverlay({super.key});
@@ -11,6 +12,10 @@ class TimerOverlay extends StatefulWidget {
 class _TimerOverlayState extends State<TimerOverlay> {
   late TimerState _timerState;
   final _timerManager = TimerManager.instance;
+
+  final GlobalKey audioButtonKey = GlobalKey();
+  bool _isAudioBoxVisible = false;
+  double audioBoxPositionY = 100.0; // 버튼의 bottom y좌표 저장
 
   @override
   void initState() {
@@ -37,108 +42,88 @@ class _TimerOverlayState extends State<TimerOverlay> {
     return '${minutes.toString().padLeft(2, '0')}:${remainingSeconds.toString().padLeft(2, '0')}';
   }
 
+  void _toggleAudioBox() {
+    final RenderBox renderBox =
+        audioButtonKey.currentContext?.findRenderObject() as RenderBox;
+    final position = renderBox.localToGlobal(Offset.zero);
+    final size = renderBox.size;
+
+    setState(() {
+      _isAudioBoxVisible = !_isAudioBoxVisible;
+      audioBoxPositionY = position.dy + size.height; // 버튼의 bottom y좌표
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        // 타이머 디스플레이
-        Container(
-          padding: const EdgeInsets.all(20),
-          margin: const EdgeInsets.only(top: 40),
-          decoration: BoxDecoration(
-            color: const Color.fromRGBO(0, 0, 0, 0.5),
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
+    return Stack(children: [
+      Column(
+        children: [
+          const SizedBox(height: 40),
+          // 타이머 디스플레이
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              // 음악 버튼
+              IconButton(
+                key: audioButtonKey,
+                onPressed: _toggleAudioBox,
+                icon: Icon(
+                  Icons.music_note,
+                ),
+              ),
+              // 타이머 텍스트
               Text(
                 _formatTime(_timerState.focussedTime),
                 style: const TextStyle(
-                  fontSize: 48,
+                  fontSize: 32,
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 8),
-              Text(
-                getStatusText(_timerState.status),
-                style: const TextStyle(
-                  fontSize: 24,
-                  color: Colors.white70,
-                ),
-              ),
+              // 빈 공간
+              SizedBox(width: 48), // 음악 버튼과 같은 크기의 빈 공간
             ],
           ),
-        ),
-        const Spacer(),
-        // 타이머 컨트롤
-        Padding(
-          padding: const EdgeInsets.only(bottom: 40),
-          child: Row(
+          // 타이머 컨트롤
+          Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ElevatedButton(
-                onPressed: _timerManager.start,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text('시작'),
-              ),
-              const SizedBox(width: 20),
-              ElevatedButton(
-                onPressed: _timerManager.pause,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text('일시정지'),
-              ),
-              const SizedBox(width: 20),
-              ElevatedButton(
-                onPressed: _timerManager.finish,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text('리셋'),
-              ),
-              const SizedBox(width: 20),
-              ElevatedButton(
-                onPressed: _timerManager.finish,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                ),
-                child: const Text('음악'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: _timerState.status == TimerStatus.running
+                        ? _timerManager.pause
+                        : _timerManager.start,
+                    icon: Icon(
+                      _timerState.status == TimerStatus.running
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  IconButton(
+                    onPressed: _timerManager.finish,
+                    icon: Icon(
+                      Icons.refresh,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
+        ],
+      ),
+      Positioned(
+        top: audioBoxPositionY,
+        width: 200,
+        height: 200,
+        child: Offstage(
+          offstage: !_isAudioBoxVisible,
+          child: AudioBox(),
         ),
-      ],
-    );
-  }
-
-  String getStatusText(TimerStatus status) {
-    switch (status) {
-      case TimerStatus.idle:
-        return '준비';
-      case TimerStatus.running:
-        return '집중 중';
-      case TimerStatus.paused:
-        return '일시정지';
-      case TimerStatus.end:
-        return '완료!';
-      default:
-        return '';
-    }
+      ),
+    ]);
   }
 }

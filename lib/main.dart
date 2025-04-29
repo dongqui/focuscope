@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
             GameOverlay.focusEnd.name: (context, game) =>
                 const FocusEndOverlay(),
           },
-          initialActiveOverlays: const ['form'],
+          initialActiveOverlays: [GameOverlay.timer.name],
         ),
       ),
     );
