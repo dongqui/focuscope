@@ -1,0 +1,167 @@
+import 'package:catodo/extensions/index.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:catodo/features/dashboard/presentation/views/widgets/legends_list_widget.dart';
+
+class BaseChart extends StatelessWidget {
+  final List<String> labels;
+  final List<List<(String, double)>> dataList;
+  late final Map<String, Color> colors;
+  late final List<String> activities;
+
+  BaseChart({
+    super.key,
+    required this.dataList,
+    required this.labels,
+  }) {
+    assert(labels.length == dataList.length,
+        'labels.length must be equal to dataList.length');
+
+    activities = <String>{
+      for (final series in dataList)
+        for (final (key, _) in series) key,
+    }.toList();
+
+    colors = {
+      for (var i = 0; i < activities.length; i++)
+        activities[i]: _generateDistinctColor(i, activities.length),
+    };
+  }
+
+  static Color _generateDistinctColor(int index, int total) {
+    // Hue는 0 ~ 360 사이에서 균등 분포
+    final hue = (360.0 * index / total) % 360;
+
+    // 채도(Saturation), 명도(Lightness)는 일정하게 고정
+    return HSLColor.fromAHSL(1.0, hue, 0.6, 0.55).toColor();
+  }
+
+  BarChartGroupData generateGroupData(List<(String, double)> series, int x) {
+    double fromY = 0;
+    double previousValue = 0;
+    List<BarChartRodData> barRods = [];
+
+    int index = 0;
+
+    for (var data in series) {
+      final name = data.$1;
+      final value = data.$2;
+      bool isLast = index == series.length - 1;
+
+      if (index++ > 0) {
+        fromY += previousValue;
+      }
+      previousValue = value;
+
+      barRods.add(BarChartRodData(
+        borderRadius: isLast
+            ? BorderRadius.only(
+                topLeft: Radius.circular(8), topRight: Radius.circular(8))
+            : BorderRadius.circular(0),
+        fromY: fromY,
+        toY: fromY + value,
+        color: colors[name],
+        width: 5,
+      ));
+    }
+    return BarChartGroupData(
+      x: x,
+      groupVertically: true,
+      barRods: barRods,
+    );
+  }
+
+  Widget bottomTitles(double value, TitleMeta meta) {
+    const style = TextStyle(fontSize: 10);
+    final name = labels[value.toInt()];
+
+    return SideTitleWidget(
+      meta: meta,
+      child: Text(name, style: style),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Activity',
+              style: TextStyle(
+                color: Colors.blue,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            LegendsListWidget(
+                legends: activities
+                    .map((activity) => Legend(activity, colors[activity]!))
+                    .toList()),
+            const SizedBox(height: 14),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width - 48,
+                    height: 400,
+                    child: BarChart(
+                      BarChartData(
+                          alignment: BarChartAlignment.spaceAround,
+                          titlesData: FlTitlesData(
+                            leftTitles: const AxisTitles(),
+                            rightTitles: const AxisTitles(),
+                            topTitles: const AxisTitles(),
+                            bottomTitles: AxisTitles(
+                              sideTitles: SideTitles(
+                                showTitles: true,
+                                getTitlesWidget: bottomTitles,
+                                reservedSize: 20,
+                              ),
+                            ),
+                          ),
+                          borderData: FlBorderData(show: false),
+                          gridData: const FlGridData(show: false),
+                          barTouchData: BarTouchData(enabled: false),
+                          barGroups: dataList.mapWithIndex((series, index) =>
+                              generateGroupData(series, index)),
+                          maxY: 1200),
+                      // extraLinesData: ExtraLinesData(
+                      //   horizontalLines: [
+                      //     HorizontalLine(
+                      //       y: 3.3,
+                      //       color: pilateColor,
+                      //       strokeWidth: 1,
+                      //       dashArray: [20, 4],
+                      //     ),
+                      //     HorizontalLine(
+                      //       y: 8,
+                      //       color: quickWorkoutColor,
+                      //       strokeWidth: 1,
+                      //       dashArray: [20, 4],
+                      //     ),
+                      //     HorizontalLine(
+                      //       y: 11,
+                      //       color: cyclingColor,
+                      //       strokeWidth: 1,
+                      //       dashArray: [20, 4],
+                      //     ),
+                      //   ],
+                      // ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
