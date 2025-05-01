@@ -1,10 +1,10 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:catodo/features/overlays/data/models/focus_session_model.dart';
+import 'package:catodo/shared_domain/focus_session/models/focus_session_model.dart';
 import 'package:catodo/features/overlays/data/models/latest-activity-model.dart';
-import 'package:catodo/features/overlays/data/datasources/focus_session_datasource.dart';
+import 'package:catodo/shared_domain/focus_session/datasources/focus_session_datasource.dart';
 import 'package:catodo/features/overlays/data/datasources/latest-activity-datasource.dart';
-import 'package:catodo/features/overlays/data/repositories/focus_session_repository.dart';
+import 'package:catodo/shared_domain/focus_session/repositories/focus_session_repository.dart';
 import 'package:catodo/features/overlays/data/repositories/latest_activity_repository.dart';
 import 'package:catodo/features/audio/data/datasources/audio_datasource.dart';
 import 'package:catodo/features/audio/data/repositories/audio_repository.dart';

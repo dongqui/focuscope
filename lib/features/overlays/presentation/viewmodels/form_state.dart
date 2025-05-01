@@ -1,6 +1,6 @@
 import 'package:catodo/features/overlays/data/models/latest-activity-model.dart';
-import 'package:catodo/features/overlays/data/repositories/focus_session_repository.dart';
-import 'package:catodo/features/overlays/data/models/focus_session_model.dart';
+import 'package:catodo/shared_domain/focus_session/repositories/focus_session_repository.dart';
+import 'package:catodo/shared_domain/focus_session/models/focus_session_model.dart';
 import 'package:catodo/constants/index.dart';
 
 class FocusForm {
