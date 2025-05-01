@@ -29,7 +29,11 @@ class AudioDataSource {
 
   Future<void> updateAudio(Audio audio) async {
     await _isar.writeTxn(() async {
-      await _isar.audios.put(audio);
+      final existingAudio = await _isar.audios.where().findFirst();
+      if (existingAudio != null) {
+        audio.id = existingAudio.id;
+        await _isar.audios.put(audio);
+      }
     });
   }
 }

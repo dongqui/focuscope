@@ -20,6 +20,7 @@ class _AudioBoxState extends State<AudioBox> {
   @override
   void initState() {
     super.initState();
+    initAudioList();
   }
 
   @override
