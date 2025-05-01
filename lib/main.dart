@@ -7,12 +7,10 @@ import 'features/overlays/presentation/views/form_overlay/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 import 'package:catodo/core/init.dart';
 import 'features/overlays/presentation/views/focus_end_overlay.dart';
-// import 'package:wakelock/wakelock.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await init();
-  // Wakelock.enable();
   runApp(MyApp());
 }
 
