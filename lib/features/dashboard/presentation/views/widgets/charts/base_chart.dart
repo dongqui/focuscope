@@ -90,11 +90,12 @@ class BaseChart extends StatelessWidget {
         width: 10,
       ));
     }
+
     return BarChartGroupData(
       x: x,
       groupVertically: true,
       barRods: barRods,
-      showingTooltipIndicators: barRods.isEmpty ? [] : [barRods.length - 1],
+      showingTooltipIndicators: [barRods.length],
     );
   }
 
@@ -169,9 +170,12 @@ class BaseChart extends StatelessWidget {
           borderData: FlBorderData(show: false),
           gridData: FlGridData(show: false),
           barTouchData: barTouchData,
-          barGroups: dataList
-              .mapWithIndex((series, index) => generateGroupData(series, index))
-              .toList(),
+          barGroups: dataList.isEmpty
+              ? []
+              : dataList
+                  .mapWithIndex(
+                      (series, index) => generateGroupData(series, index))
+                  .toList(),
           maxY: max(maxValue * 1.5, 1.0),
         ),
       );

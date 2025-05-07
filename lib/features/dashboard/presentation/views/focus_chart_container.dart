@@ -87,10 +87,8 @@ class _FocusChartContainerState extends State<FocusChartContainer> {
                 ),
               ],
               onChanged: (String? newValue) {
-                setState(() {
-                  ChartManager.instance
-                      .updateDateUnit(DateUnit.values.byName(newValue!));
-                });
+                ChartManager.instance
+                    .updateDateUnit(DateUnit.values.byName(newValue!));
               },
             ),
           ],

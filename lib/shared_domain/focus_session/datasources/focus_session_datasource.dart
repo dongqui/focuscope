@@ -94,7 +94,7 @@ class FocusSessionDataSource {
         result[timeSlot].add((session.activity, session.focusedTime));
       }
     }
-    print(result);
+
     return result;
   }
 }
