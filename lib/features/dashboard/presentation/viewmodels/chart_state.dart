@@ -1,5 +1,8 @@
 import 'package:catodo/core/observer.dart';
 import 'package:catodo/core/utils/date_helper.dart';
+import 'package:catodo/shared_domain/focus_session/repositories/focus_session_repository.dart';
+
+typedef ActivityTimeTuple = (String, int);
 
 enum DateUnit {
   day,
@@ -11,10 +14,12 @@ enum DateUnit {
 class ChartState {
   DateUnit currentDateUnit;
   DateTime selectedDate;
+  List<List<ActivityTimeTuple>> focusSessions;
 
   ChartState({
     this.currentDateUnit = DateUnit.week,
     DateTime? selectedDate,
+    this.focusSessions = const [],
   }) : selectedDate = selectedDate ?? DateTime.now();
 }
 
@@ -29,7 +34,7 @@ class ChartManager extends Observer<ChartState> {
 
   void updateDateUnit(DateUnit unit) {
     _state.currentDateUnit = unit;
-    notifyListeners(_state);
+    getFocusSessions();
   }
 
   void moveNext() {
@@ -47,7 +52,7 @@ class ChartManager extends Observer<ChartState> {
         _state.selectedDate = DateHelper.getNextYear(_state.selectedDate);
         break;
     }
-    notifyListeners(_state);
+    getFocusSessions();
   }
 
   void movePrevious() {
@@ -65,11 +70,21 @@ class ChartManager extends Observer<ChartState> {
         _state.selectedDate = DateHelper.getPreviousYear(_state.selectedDate);
         break;
     }
-    notifyListeners(_state);
+    getFocusSessions();
   }
 
   String getFormattedDateRange() {
     return DateHelper.getFormattedDateRange(
         _state.currentDateUnit, _state.selectedDate);
+  }
+
+  Future<void> getFocusSessions() async {
+    _state.focusSessions =
+        await FocusSessionRepository.instance.getFocusSessionsByDateRange(
+      _state.currentDateUnit,
+      _state.selectedDate,
+    );
+
+    notifyListeners(_state);
   }
 }

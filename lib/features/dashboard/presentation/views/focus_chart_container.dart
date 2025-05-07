@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:catodo/features/dashboard/presentation/views/widgets/charts/year_chart.dart';
+import 'package:catodo/features/dashboard/presentation/views/widgets/charts/focus_chart_per_date_unit.dart';
 import 'package:catodo/features/dashboard/presentation/viewmodels/chart_state.dart';
 
-class FocusPeriodChart extends StatefulWidget {
-  const FocusPeriodChart({super.key});
+class FocusChartContainer extends StatefulWidget {
+  const FocusChartContainer({super.key});
 
   @override
-  State<FocusPeriodChart> createState() => _FocusPeriodChartState();
+  State<FocusChartContainer> createState() => _FocusChartContainerState();
 }
 
-class _FocusPeriodChartState extends State<FocusPeriodChart> {
+class _FocusChartContainerState extends State<FocusChartContainer> {
   final state = ChartManager.instance.state;
 
   void _handleChangeState(ChartState state) {
@@ -95,7 +95,7 @@ class _FocusPeriodChartState extends State<FocusPeriodChart> {
             ),
           ],
         ),
-        const YearChart(),
+        const FocusChartPerDateUnit(),
       ],
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:catodo/features/dashboard/presentation/views/focus_period_chart.dart';
+import 'package:catodo/features/dashboard/presentation/views/focus_chart_container.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -14,7 +14,7 @@ class _DashboardState extends State<Dashboard> {
     return Column(
       children: [
         const SizedBox(height: 50),
-        const FocusPeriodChart(),
+        const FocusChartContainer(),
       ],
     );
   }

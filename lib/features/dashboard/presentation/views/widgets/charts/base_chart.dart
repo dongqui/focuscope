@@ -2,20 +2,35 @@ import 'package:catodo/extensions/index.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:catodo/features/dashboard/presentation/views/widgets/legends_list_widget.dart';
+import 'package:catodo/features/dashboard/presentation/viewmodels/chart_state.dart';
+import 'dart:math';
+
+extension DurationExtension on int {
+  String toReadableDuration() {
+    if (this < 60) {
+      return '${this}s';
+    } else if (this < 3600) {
+      return '${(this / 60).round()}m';
+    } else {
+      return '${(this / 3600).round()}h';
+    }
+  }
+}
 
 class BaseChart extends StatelessWidget {
   final List<String> labels;
-  final List<List<(String, double)>> dataList;
+  final List<List<ActivityTimeTuple>> dataList;
   late final Map<String, Color> colors;
   late final List<String> activities;
-
+  late final double maxValue;
+  late final String displayUnit;
   BaseChart({
     super.key,
     required this.dataList,
     required this.labels,
   }) {
-    assert(labels.length == dataList.length,
-        'labels.length must be equal to dataList.length');
+    // assert(labels.length == dataList.length,
+    //     'labels.length must be equal to dataList.length');
 
     activities = <String>{
       for (final series in dataList)
@@ -26,6 +41,8 @@ class BaseChart extends StatelessWidget {
       for (var i = 0; i < activities.length; i++)
         activities[i]: _generateDistinctColor(i, activities.length),
     };
+
+    maxValue = _calculateMaxValueAndUnit();
   }
 
   static Color _generateDistinctColor(int index, int total) {
@@ -36,7 +53,16 @@ class BaseChart extends StatelessWidget {
     return HSLColor.fromAHSL(1.0, hue, 0.6, 0.55).toColor();
   }
 
-  BarChartGroupData generateGroupData(List<(String, double)> series, int x) {
+  BarChartGroupData generateGroupData(List<ActivityTimeTuple> series, int x) {
+    if (series.isEmpty) {
+      return BarChartGroupData(
+        x: x,
+        groupVertically: true,
+        barRods: [],
+        showingTooltipIndicators: [],
+      );
+    }
+
     double fromY = 0;
     double previousValue = 0;
     List<BarChartRodData> barRods = [];
@@ -51,28 +77,32 @@ class BaseChart extends StatelessWidget {
       if (index++ > 0) {
         fromY += previousValue;
       }
-      previousValue = value;
+      previousValue = value.toDouble();
 
       barRods.add(BarChartRodData(
         borderRadius: isLast
             ? BorderRadius.only(
-                topLeft: Radius.circular(8), topRight: Radius.circular(8))
+                topLeft: Radius.circular(4), topRight: Radius.circular(4))
             : BorderRadius.circular(0),
         fromY: fromY,
         toY: fromY + value,
-        color: colors[name],
-        width: 5,
+        color: colors[name] ?? Colors.grey,
+        width: 10,
       ));
     }
     return BarChartGroupData(
       x: x,
       groupVertically: true,
       barRods: barRods,
+      showingTooltipIndicators: barRods.isEmpty ? [] : [barRods.length - 1],
     );
   }
 
   Widget bottomTitles(double value, TitleMeta meta) {
     const style = TextStyle(fontSize: 10);
+    if (value.toInt() >= labels.length) {
+      return const SizedBox.shrink();
+    }
     final name = labels[value.toInt()];
 
     return SideTitleWidget(
@@ -81,86 +111,116 @@ class BaseChart extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Activity',
-              style: TextStyle(
-                color: Colors.blue,
-                fontSize: 16,
+  double _calculateMaxValueAndUnit() {
+    double maxSeconds = 0;
+
+    // 각 시리즈의 총합 계산
+    for (var series in dataList) {
+      double seriesTotal = 0;
+      for (var (_, value) in series) {
+        seriesTotal += value;
+      }
+      maxSeconds = max(maxSeconds, seriesTotal);
+    }
+
+    return maxSeconds;
+  }
+
+  BarTouchData get barTouchData => BarTouchData(
+        enabled: false,
+        touchTooltipData: BarTouchTooltipData(
+          getTooltipColor: (group) => Colors.transparent,
+          tooltipPadding: EdgeInsets.zero,
+          tooltipMargin: 8,
+          getTooltipItem: (
+            BarChartGroupData group,
+            int groupIndex,
+            BarChartRodData rod,
+            int rodIndex,
+          ) {
+            return BarTooltipItem(
+              rod.toY.round().toReadableDuration(),
+              const TextStyle(
+                color: Colors.black,
                 fontWeight: FontWeight.bold,
               ),
+            );
+          },
+        ),
+      );
+
+  BarChart get barChart => BarChart(
+        BarChartData(
+          alignment: labels.length <= 12
+              ? BarChartAlignment.spaceBetween
+              : BarChartAlignment.spaceAround,
+          titlesData: FlTitlesData(
+            leftTitles: AxisTitles(),
+            rightTitles: AxisTitles(),
+            topTitles: AxisTitles(),
+            bottomTitles: AxisTitles(
+              sideTitles: SideTitles(
+                showTitles: true,
+                getTitlesWidget: bottomTitles,
+                reservedSize: 30,
+              ),
             ),
-            const SizedBox(height: 8),
+          ),
+          borderData: FlBorderData(show: false),
+          gridData: FlGridData(show: false),
+          barTouchData: barTouchData,
+          barGroups: dataList
+              .mapWithIndex((series, index) => generateGroupData(series, index))
+              .toList(),
+          maxY: max(maxValue * 1.5, 1.0),
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    if (dataList.isEmpty || labels.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(16),
+        child: Center(
+          child: Text('데이터가 없습니다'),
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Activity',
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          if (activities.isNotEmpty)
             LegendsListWidget(
                 legends: activities
                     .map((activity) => Legend(activity, colors[activity]!))
                     .toList()),
-            const SizedBox(height: 14),
-            SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: MediaQuery.of(context).size.width - 48,
-                    height: 400,
-                    child: BarChart(
-                      BarChartData(
-                          alignment: BarChartAlignment.spaceAround,
-                          titlesData: FlTitlesData(
-                            leftTitles: const AxisTitles(),
-                            rightTitles: const AxisTitles(),
-                            topTitles: const AxisTitles(),
-                            bottomTitles: AxisTitles(
-                              sideTitles: SideTitles(
-                                showTitles: true,
-                                getTitlesWidget: bottomTitles,
-                                reservedSize: 20,
-                              ),
-                            ),
-                          ),
-                          borderData: FlBorderData(show: false),
-                          gridData: const FlGridData(show: false),
-                          barTouchData: BarTouchData(enabled: false),
-                          barGroups: dataList.mapWithIndex((series, index) =>
-                              generateGroupData(series, index)),
-                          maxY: 1200),
-                      // extraLinesData: ExtraLinesData(
-                      //   horizontalLines: [
-                      //     HorizontalLine(
-                      //       y: 3.3,
-                      //       color: pilateColor,
-                      //       strokeWidth: 1,
-                      //       dashArray: [20, 4],
-                      //     ),
-                      //     HorizontalLine(
-                      //       y: 8,
-                      //       color: quickWorkoutColor,
-                      //       strokeWidth: 1,
-                      //       dashArray: [20, 4],
-                      //     ),
-                      //     HorizontalLine(
-                      //       y: 11,
-                      //       color: cyclingColor,
-                      //       strokeWidth: 1,
-                      //       dashArray: [20, 4],
-                      //     ),
-                      //   ],
-                      // ),
-                    ),
+          labels.length <= 12
+              ? AspectRatio(
+                  aspectRatio: 1.6,
+                  child: barChart,
+                )
+              : SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width + 200,
+                    height: MediaQuery.of(context).size.width / 1.6,
+                    child: barChart,
                   ),
-                ],
-              ),
-            ),
-          ],
-        ),
+                ),
+        ],
       ),
     );
   }
