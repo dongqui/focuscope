@@ -1,3 +1,4 @@
+import 'package:catodo/features/dashboard/presentation/viewmodels/chart_state.dart';
 import '../datasources/focus_session_datasource.dart';
 import '../models/focus_session_model.dart';
 
@@ -32,5 +33,11 @@ class FocusSessionRepository {
   // FocusSession 불러오기
   Future<List<FocusSession>> getFocusSessions() async {
     return await dataSource.getFocusSessions();
+  }
+
+  // 날짜 범위에 따른 FocusSession 불러오기
+  Future<List<List<ActivityTimeTuple>>> getFocusSessionsByDateRange(
+      DateUnit unit, DateTime date) async {
+    return await dataSource.getFocusSessionsByDateRange(unit, date);
   }
 }
