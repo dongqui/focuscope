@@ -16,7 +16,7 @@ class VillageMap extends PositionComponent {
     size = Vector2(50 * 32, 50 * 32);
 
     // 맵을 화면 중앙에 위치시키기 위해 오프셋 설정
-    position = -size / 2;
+    position = Vector2.zero();
 
     // 맵 추가
     await add(_tiledMap);
