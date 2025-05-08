@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
 import 'package:catodo/features/dashboard/presentation/views/dashboard.dart';
 import 'package:catodo/widgets/full_screen_overlay.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class HomeOverlay extends StatefulWidget {
   const HomeOverlay({super.key});
@@ -38,9 +39,9 @@ class HomeOverlayState extends State<HomeOverlay> {
                 borderRadius: BorderRadius.circular(30),
               ),
             ),
-            child: const Text(
-              '시작하기',
-              style: TextStyle(
+            child: Text(
+              AppLocalizations.of(context)!.helloWorld,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
