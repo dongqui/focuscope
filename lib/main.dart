@@ -30,7 +30,8 @@ class MyApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Color(0xFF3A86FF)), // 보라색에서 파란색으로 변경
         useMaterial3: true,
       ),
       home: Scaffold(
