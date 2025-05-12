@@ -3,6 +3,11 @@ import 'package:just_audio/just_audio.dart';
 enum AudioType {
   rain,
   birds,
+  forest,
+  ocean,
+  wind,
+  fire,
+  thunder,
 }
 
 class AudioController {

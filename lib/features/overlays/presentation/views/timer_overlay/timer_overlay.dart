@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../viewmodels/timer_state.dart';
 import 'package:catodo/features/audio/presentation/views/audio_box.dart';
+import 'package:catodo/widgets/background_to_tab_in_stack.dart';
 
 class TimerOverlay extends StatefulWidget {
   const TimerOverlay({super.key});
@@ -50,75 +51,77 @@ class _TimerOverlayState extends State<TimerOverlay> {
 
     setState(() {
       _isAudioBoxVisible = !_isAudioBoxVisible;
-      audioBoxPositionY = position.dy + size.height; // 버튼의 bottom y좌표
+      audioBoxPositionY = position.dy - size.height * 6.5; // 버튼 위로 올라가도록 수정
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Stack(children: [
-      Column(
-        children: [
-          const SizedBox(height: 40),
-          // 타이머 디스플레이
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      if (_isAudioBoxVisible)
+        BackgroundToTabInStack(
+          onTap: _toggleAudioBox,
+        ),
+      Align(
+        alignment: Alignment(0, -0.5),
+        child: Text(
+          _formatTime(_timerState.focussedTime),
+          style: const TextStyle(
+            fontSize: 32,
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      Positioned(
+        bottom: 20,
+        right: 20,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(32),
+            color: Color(0x600D1B2A),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              // 음악 버튼
               IconButton(
                 key: audioButtonKey,
+                color: Color(0xffffffff),
                 onPressed: _toggleAudioBox,
                 icon: Icon(
                   Icons.music_note,
                 ),
               ),
-              // 타이머 텍스트
-              Text(
-                _formatTime(_timerState.focussedTime),
-                style: const TextStyle(
-                  fontSize: 32,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
+              const SizedBox(width: 16),
+              IconButton(
+                color: Color(0xffffffff),
+                onPressed: _timerState.status == TimerStatus.running
+                    ? _timerManager.pause
+                    : _timerManager.start,
+                icon: Icon(
+                  _timerState.status == TimerStatus.running
+                      ? Icons.pause
+                      : Icons.play_arrow,
                 ),
               ),
-              // 빈 공간
-              SizedBox(width: 48), // 음악 버튼과 같은 크기의 빈 공간
-            ],
-          ),
-          // 타이머 컨트롤
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    onPressed: _timerState.status == TimerStatus.running
-                        ? _timerManager.pause
-                        : _timerManager.start,
-                    icon: Icon(
-                      _timerState.status == TimerStatus.running
-                          ? Icons.pause
-                          : Icons.play_arrow,
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  IconButton(
-                    onPressed: _timerManager.finish,
-                    icon: Icon(
-                      Icons.refresh,
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 16),
+              IconButton(
+                color: Color(0xffffffff),
+                onPressed: _timerManager.finish,
+                icon: Icon(
+                  Icons.stop,
+                ),
               ),
             ],
           ),
-        ],
+        ),
       ),
       Positioned(
         top: audioBoxPositionY,
-        width: 200,
-        height: 200,
+        left: 5,
+        width: 260,
+        height: 302,
         child: Offstage(
           offstage: !_isAudioBoxVisible,
           child: AudioBox(),
