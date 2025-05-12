@@ -10,16 +10,37 @@ class FocusTimeInputWidget extends StatefulWidget {
 }
 
 class _FocusTimeInputWidgetState extends State<FocusTimeInputWidget> {
+  int _selectedIndex = 1; // 기본값: 25분 (index 1)
+  final List<int> _minutesOptions = [
+    -1,
+    1,
+    3,
+    5,
+    10,
+    15,
+    20,
+    25,
+    30,
+    45,
+    60,
+    120
+  ];
+  late final PageController _pageController;
+
   @override
   void initState() {
     super.initState();
+    _selectedIndex =
+        _minutesOptions.indexOf(FormManager.instance.state.duration ~/ 60);
+    _pageController =
+        PageController(initialPage: _selectedIndex, viewportFraction: 0.2);
     FormManager.instance.addListener(_onFormStateChanged);
   }
 
   @override
   void dispose() {
-    // 리스너 제거
     FormManager.instance.removeListener(_onFormStateChanged);
+    _pageController.dispose();
     super.dispose();
   }
 
@@ -27,25 +48,54 @@ class _FocusTimeInputWidgetState extends State<FocusTimeInputWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<int>(
-      value: FormManager.instance.state.duration ~/ 60,
-      decoration: const InputDecoration(
-        border: OutlineInputBorder(),
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      const Text(
+        '얼마나 집중하실 건가요?',
+        style: TextStyle(
+            color: Color(0xFFFFFFFF),
+            fontSize: 20,
+            fontWeight: FontWeight.w600),
       ),
-      items: [15, 25, 30, 45, 60].map((minutes) {
-        return DropdownMenuItem(
-          value: minutes,
-          child: Text('$minutes 분'),
-        );
-      }).toList(),
-      onChanged: (value) {
-        if (value != null) {
-          setState(() {
-            TimerManager.instance.updateGoalTime(value * 60);
-            FormManager.instance.updateDuration(value * 60);
-          });
-        }
-      },
-    );
+      SizedBox(
+        height: 40,
+        child: PageView.builder(
+          controller: _pageController,
+          scrollDirection: Axis.horizontal,
+          itemCount: _minutesOptions.length,
+          physics: const BouncingScrollPhysics(),
+          onPageChanged: (index) {
+            if (_selectedIndex != index) {
+              setState(() {
+                _selectedIndex = index;
+                TimerManager.instance
+                    .updateGoalTime(_minutesOptions[index] * 60);
+                FormManager.instance
+                    .updateDuration(_minutesOptions[index] * 60);
+              });
+            }
+          },
+          itemBuilder: (context, index) {
+            final isSelected = index == _selectedIndex;
+            return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                curve: Curves.easeInOut,
+                alignment: Alignment.center,
+                child: Text(
+                  _minutesOptions[index] == -1
+                      ? '∞'
+                      : '${_minutesOptions[index]}',
+                  style: TextStyle(
+                    fontSize: isSelected ? 32 : 20,
+                    fontWeight:
+                        isSelected ? FontWeight.bold : FontWeight.normal,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Colors.grey[500],
+                  ),
+                ));
+          },
+        ),
+      ),
+    ]);
   }
 }

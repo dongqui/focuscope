@@ -40,58 +40,67 @@ class _FormOverlayState extends State<FormOverlay>
     super.dispose();
   }
 
+  void _handleDragEnd(DragEndDetails details) {
+    if (details.primaryVelocity! > 300) {
+      // 아래로 스와이프 속도가 300 이상일 때
+      _controller.reverse().then((_) {
+        TimerManager.instance.cancel();
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
       position: _offsetAnimation,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          IntrinsicHeight(
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(16)),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+      child: GestureDetector(
+        onVerticalDragEnd: _handleDragEnd,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IntrinsicHeight(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFF0D1B2A).withValues(alpha: 0.9),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(16)),
+                ),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const FocusActivityInputWidget(),
-                    const SizedBox(height: 20),
-                    const Spacer(),
-                    const FocusTimeInputWidget(),
-                    Hero(
-                      tag: 'start_button',
-                      child: ElevatedButton(
-                        onPressed: TimerManager.instance.start,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(2),
                         ),
-                        child: const Text('시작하기'),
                       ),
                     ),
-                    ElevatedButton(
-                        onPressed: TimerManager.instance.cancel,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 15),
-                        ),
-                        child: const Text('뒤로가기'))
+                    const FocusActivityInputWidget(),
+                    const SizedBox(height: 32),
+                    const FocusTimeInputWidget(),
+                    const SizedBox(height: 64),
+                    FilledButton(
+                      onPressed: TimerManager.instance.start,
+                      style: FilledButton.styleFrom(
+                        backgroundColor: Color(0xFF3A86FF),
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                      ),
+                      child: const Text('시작하기'),
+                    ),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -9,7 +9,6 @@ class FocusActivityInputWidget extends StatefulWidget {
 }
 
 class _State extends State<FocusActivityInputWidget> {
-  final TextEditingController _focusTextController = TextEditingController();
   late List<String> _tags = [];
 
   @override
@@ -23,13 +22,11 @@ class _State extends State<FocusActivityInputWidget> {
   void dispose() {
     // 리스너 제거
     FormManager.instance.removeListener(_onFormStateChanged);
-    _focusTextController.dispose();
+
     super.dispose();
   }
 
-  void _onFormStateChanged(FocusForm state) {
-    _focusTextController.text = state.activity;
-  }
+  void _onFormStateChanged(FocusForm state) {}
 
   void initTags() async {
     final tags = await FormManager.instance.getLatestActivities();
@@ -46,21 +43,25 @@ class _State extends State<FocusActivityInputWidget> {
         const Text(
           '어떤 일에 집중하실 건가요?',
           style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+              color: Color(0xFFFFFFFF),
+              fontSize: 20,
+              fontWeight: FontWeight.w600),
         ),
+        const SizedBox(height: 8),
         TextField(
-          controller: _focusTextController,
+          style: TextStyle(color: Color(0xFFFFFFFF)),
+          cursorColor: Color(0xFFFFFFFF),
           onChanged: (text) {
             FormManager.instance.updateActivity(text);
           },
           decoration: const InputDecoration(
+            fillColor: Color(0xFF0D1B2A),
             hintText: '예: 수학 문제 풀기, 영어 단어 외우기',
-            border: UnderlineInputBorder(),
+            hintStyle: TextStyle(color: Color(0x10FFFFFF)),
+            border: OutlineInputBorder(),
           ),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 4),
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Row(
