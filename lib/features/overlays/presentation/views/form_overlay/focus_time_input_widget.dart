@@ -32,6 +32,7 @@ class _FocusTimeInputWidgetState extends State<FocusTimeInputWidget> {
     super.initState();
     _selectedIndex =
         _minutesOptions.indexOf(FormManager.instance.state.duration ~/ 60);
+
     _pageController =
         PageController(initialPage: _selectedIndex, viewportFraction: 0.2);
     FormManager.instance.addListener(_onFormStateChanged);
@@ -76,23 +77,49 @@ class _FocusTimeInputWidgetState extends State<FocusTimeInputWidget> {
           },
           itemBuilder: (context, index) {
             final isSelected = index == _selectedIndex;
-            return AnimatedContainer(
+            return GestureDetector(
+              behavior: HitTestBehavior.translucent,
+              onTap: () {
+                if (_selectedIndex != index) {
+                  _pageController.animateToPage(
+                    index,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                  );
+                  setState(() {
+                    _selectedIndex = index;
+                    TimerManager.instance
+                        .updateGoalTime(_minutesOptions[index] * 60);
+                    FormManager.instance
+                        .updateDuration(_minutesOptions[index] * 60);
+                  });
+                }
+              },
+              child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 curve: Curves.easeInOut,
                 alignment: Alignment.center,
-                child: Text(
-                  _minutesOptions[index] == -1
-                      ? '∞'
-                      : '${_minutesOptions[index]}',
-                  style: TextStyle(
-                    fontSize: isSelected ? 32 : 20,
-                    fontWeight:
-                        isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Colors.grey[500],
+                width: isSelected ? 60 : 40,
+                height: isSelected ? 60 : 40,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    _minutesOptions[index] == -1
+                        ? '∞'
+                        : '${_minutesOptions[index]}',
+                    style: TextStyle(
+                      fontSize: isSelected ? 32 : 20,
+                      fontWeight:
+                          isSelected ? FontWeight.bold : FontWeight.normal,
+                      color: isSelected
+                          ? Theme.of(context).colorScheme.primary
+                          : Colors.grey[500],
+                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ));
+                ),
+              ),
+            );
           },
         ),
       ),

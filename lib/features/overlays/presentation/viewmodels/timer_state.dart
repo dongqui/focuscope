@@ -109,12 +109,9 @@ class TimerManager {
 
   void _updatefocussedTime() {
     final newfocussedTime = _state.focussedTime + 1;
-    if (newfocussedTime >= _state.goalTime) {
-      _updateState(_state.copyWith(
-        status: TimerStatus.end,
-      ));
-    } else {
-      _updateState(_state.copyWith(focussedTime: newfocussedTime));
+    _updateState(_state.copyWith(focussedTime: newfocussedTime));
+    if (_state.goalTime >= 0 && newfocussedTime >= _state.goalTime) {
+      finish();
     }
   }
 

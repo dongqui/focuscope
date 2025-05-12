@@ -88,7 +88,14 @@ class _FormOverlayState extends State<FormOverlay>
                     const FocusTimeInputWidget(),
                     const SizedBox(height: 64),
                     FilledButton(
-                      onPressed: TimerManager.instance.start,
+                      onPressed: () {
+                        final currentFocus = FocusScope.of(context);
+                        if (currentFocus.hasFocus) {
+                          currentFocus.unfocus();
+                          return;
+                        }
+                        TimerManager.instance.start();
+                      },
                       style: FilledButton.styleFrom(
                         backgroundColor: Color(0xFF3A86FF),
                         padding: const EdgeInsets.symmetric(vertical: 15),

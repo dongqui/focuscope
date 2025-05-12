@@ -60,7 +60,7 @@ class FormManager {
   }
 
   void updateDuration(int duration) {
-    _updateState(_state.copyWith(duration: duration * 60));
+    _updateState(_state.copyWith(duration: duration));
   }
 
   void _updateState(FocusForm newState) {

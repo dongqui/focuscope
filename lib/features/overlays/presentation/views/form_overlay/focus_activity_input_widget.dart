@@ -10,6 +10,7 @@ class FocusActivityInputWidget extends StatefulWidget {
 
 class _State extends State<FocusActivityInputWidget> {
   late List<String> _tags = [];
+  final TextEditingController _focusTextController = TextEditingController();
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _State extends State<FocusActivityInputWidget> {
         ),
         const SizedBox(height: 8),
         TextField(
+          controller: _focusTextController,
           style: TextStyle(color: Color(0xFFFFFFFF)),
           cursorColor: Color(0xFFFFFFFF),
           onChanged: (text) {
@@ -72,6 +74,7 @@ class _State extends State<FocusActivityInputWidget> {
                         onTap: () {
                           setState(() {
                             FormManager.instance.updateActivity(tag);
+                            _focusTextController.text = tag;
                           });
                         },
                         child: Chip(
