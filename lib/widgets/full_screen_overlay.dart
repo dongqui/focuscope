@@ -35,7 +35,7 @@ class FullScreenOverlay extends StatelessWidget {
                   top: 8,
                   left: 8,
                   child: IconButton(
-                    icon: Icon(Icons.close, size: 28),
+                    icon: Icon(Icons.close, size: 28, color: Color(0xFFFFFFFF)),
                     onPressed: onClose,
                   ),
                 ),

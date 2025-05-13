@@ -32,64 +32,109 @@ class _FocusChartContainerState extends State<FocusChartContainer> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
+        Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Container(
+              decoration: BoxDecoration(
+                color: Color(0xFF171F2A),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: ToggleButtons(
+                isSelected:
+                    List.generate(4, (i) => state.currentDateUnit.index == i),
+                onPressed: (int index) {
+                  ChartManager.instance.updateDateUnit(DateUnit.values[index]);
+                },
+                borderColor: Colors.transparent,
+                selectedColor: Color(0xFF3A86FF),
+                fillColor: Colors.transparent,
+                color: Color(0xFFFFFFFF),
+                children: const [
+                  SizedBox(
+                    width: 80,
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        ' Day ',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 80,
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        'Week',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 80,
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        'Month',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    width: 80,
+                    height: 40,
+                    child: Center(
+                      child: Text(
+                        'Year',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 IconButton(
                   onPressed: () => ChartManager.instance.movePrevious(),
-                  icon: const Icon(Icons.chevron_left_rounded),
-                  style: IconButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    shape: const CircleBorder(),
-                  ),
+                  icon: const Icon(Icons.chevron_left_rounded,
+                      color: Color(0xFFFFFFFF), size: 32),
                   visualDensity: VisualDensity.compact,
                   iconSize: 20,
                   padding: const EdgeInsets.all(8),
                 ),
-                const SizedBox(width: 8),
-                Text(ChartManager.instance.getFormattedDateRange()),
-                const SizedBox(width: 8),
+                Text(
+                  ChartManager.instance.getFormattedDateRange(),
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                ),
                 IconButton(
                   onPressed: () => ChartManager.instance.moveNext(),
-                  icon: const Icon(Icons.chevron_right_rounded),
-                  style: IconButton.styleFrom(
-                    backgroundColor:
-                        Theme.of(context).colorScheme.surfaceContainerHighest,
-                    shape: const CircleBorder(),
-                  ),
+                  icon: const Icon(Icons.chevron_right_rounded,
+                      color: Color(0xFFFFFFFF), size: 32),
                   visualDensity: VisualDensity.compact,
                   iconSize: 20,
                   padding: const EdgeInsets.all(8),
                 ),
               ],
-            ),
-            DropdownButton<String>(
-              value: state.currentDateUnit.name,
-              items: const [
-                DropdownMenuItem(
-                  value: 'day',
-                  child: Text('Day'),
-                ),
-                DropdownMenuItem(
-                  value: 'week',
-                  child: Text('Week'),
-                ),
-                DropdownMenuItem(
-                  value: 'month',
-                  child: Text('Month'),
-                ),
-                DropdownMenuItem(
-                  value: 'year',
-                  child: Text('Year'),
-                ),
-              ],
-              onChanged: (String? newValue) {
-                ChartManager.instance
-                    .updateDateUnit(DateUnit.values.byName(newValue!));
-              },
             ),
           ],
         ),

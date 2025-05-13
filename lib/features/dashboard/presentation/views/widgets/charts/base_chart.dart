@@ -10,9 +10,9 @@ extension DurationExtension on int {
     if (this < 60) {
       return '${this}s';
     } else if (this < 3600) {
-      return '${(this / 60).round()}m';
+      return '${(this / 60).toStringAsFixed(1)}m';
     } else {
-      return '${(this / 3600).round()}h';
+      return '${(this / 3600).toStringAsFixed(1)}h';
     }
   }
 }
@@ -90,17 +90,16 @@ class BaseChart extends StatelessWidget {
         width: 10,
       ));
     }
-
+    print('$x ${barRods.length}');
     return BarChartGroupData(
       x: x,
       groupVertically: true,
       barRods: barRods,
-      showingTooltipIndicators: [barRods.length],
+      showingTooltipIndicators: [barRods.length - 1],
     );
   }
 
   Widget bottomTitles(double value, TitleMeta meta) {
-    const style = TextStyle(fontSize: 10);
     if (value.toInt() >= labels.length) {
       return const SizedBox.shrink();
     }
@@ -108,7 +107,8 @@ class BaseChart extends StatelessWidget {
 
     return SideTitleWidget(
       meta: meta,
-      child: Text(name, style: style),
+      child:
+          Text(name, style: TextStyle(fontSize: 12, color: Color(0xffffffff))),
     );
   }
 
@@ -127,6 +127,12 @@ class BaseChart extends StatelessWidget {
     return maxSeconds;
   }
 
+  /// 주어진 group index의 총 시간을 초 단위로 반환
+  int getGroupTotalSeconds(int groupIndex) {
+    if (groupIndex < 0 || groupIndex >= dataList.length) return 0;
+    return dataList[groupIndex].fold<int>(0, (sum, tuple) => sum + tuple.$2);
+  }
+
   BarTouchData get barTouchData => BarTouchData(
         enabled: false,
         touchTooltipData: BarTouchTooltipData(
@@ -140,9 +146,9 @@ class BaseChart extends StatelessWidget {
             int rodIndex,
           ) {
             return BarTooltipItem(
-              rod.toY.round().toReadableDuration(),
+              getGroupTotalSeconds(groupIndex).toReadableDuration(),
               const TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             );
@@ -179,14 +185,24 @@ class BaseChart extends StatelessWidget {
           maxY: max(maxValue * 1.5, 1.0),
         ),
       );
-
   @override
   Widget build(BuildContext context) {
-    if (dataList.isEmpty || labels.isEmpty) {
-      return const Padding(
+    const int activitiesHeight = 14;
+
+    if (activities.isEmpty) {
+      return Container(
         padding: EdgeInsets.all(16),
+        width: MediaQuery.of(context).size.width + 200,
+        height: MediaQuery.of(context).size.width / 1.6 + activitiesHeight,
         child: Center(
-          child: Text('데이터가 없습니다'),
+          child: Text(
+            '데이터가 없습니다',
+            style: TextStyle(
+              color: Color(0xFFFFFFFF),
+              fontSize: 20,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ),
       );
     }
@@ -197,14 +213,6 @@ class BaseChart extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Activity',
-            style: TextStyle(
-              color: Colors.blue,
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
           const SizedBox(height: 8),
           if (activities.isNotEmpty)
             LegendsListWidget(

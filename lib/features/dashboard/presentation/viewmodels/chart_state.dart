@@ -15,11 +15,13 @@ class ChartState {
   DateUnit currentDateUnit;
   DateTime selectedDate;
   List<List<ActivityTimeTuple>> focusSessions;
+  bool isLoading = false;
 
   ChartState({
     this.currentDateUnit = DateUnit.week,
     DateTime? selectedDate,
     this.focusSessions = const [],
+    this.isLoading = false,
   }) : selectedDate = selectedDate ?? DateTime.now();
 }
 

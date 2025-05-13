@@ -26,7 +26,7 @@ class LegendWidget extends StatelessWidget {
         Text(
           name,
           style: const TextStyle(
-            color: Color(0xff757391),
+            color: Color(0xffffffff),
             fontSize: 12,
           ),
         ),
