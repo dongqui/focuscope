@@ -34,17 +34,29 @@ class MyApp extends StatelessWidget {
             seedColor: Color(0xFF3A86FF)), // 보라색에서 파란색으로 변경
         useMaterial3: true,
       ),
-      home: Scaffold(
-        body: GameWidget(
-          game: game,
-          overlayBuilderMap: {
-            GameOverlay.home.name: (context, game) => const HomeOverlay(),
-            GameOverlay.timer.name: (context, game) => const TimerOverlay(),
-            GameOverlay.form.name: (context, game) => const FormOverlay(),
-            GameOverlay.focusEnd.name: (context, game) =>
-                const FocusEndOverlay(),
-          },
-          initialActiveOverlays: [GameOverlay.home.name],
+      home: PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) {
+            return;
+          }
+          return;
+        },
+        child: Scaffold(
+          body: SafeArea(
+            top: false,
+            child: GameWidget(
+              game: game,
+              overlayBuilderMap: {
+                GameOverlay.home.name: (context, game) => const HomeOverlay(),
+                GameOverlay.timer.name: (context, game) => const TimerOverlay(),
+                GameOverlay.form.name: (context, game) => const FormOverlay(),
+                GameOverlay.focusEnd.name: (context, game) =>
+                    const FocusEndOverlay(),
+              },
+              initialActiveOverlays: [GameOverlay.home.name],
+            ),
+          ),
         ),
       ),
     );
