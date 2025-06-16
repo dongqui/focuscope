@@ -20,7 +20,7 @@ class CatCharacter extends SpriteAnimationComponent with HasGameRef {
 
     size = Vector2.all(64);
     angle = math.pi / 10;
-    animation = _sleepingAnimation;
+    animation = _danceAnimation;
   }
 
   SpriteAnimation createAnimation(Image image) {
@@ -37,11 +37,11 @@ class CatCharacter extends SpriteAnimationComponent with HasGameRef {
   }
 
   void dance() {
-    animation = _danceAnimation;
+    // animation = _danceAnimation;
   }
 
   void sleep() {
-    animation = _sleepingAnimation;
+    // animation = _sleepingAnimation;
   }
 
   void removeAnimation() {

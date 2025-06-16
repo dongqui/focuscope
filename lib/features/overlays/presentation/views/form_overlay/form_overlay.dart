@@ -86,7 +86,7 @@ class _FormOverlayState extends State<FormOverlay>
                     const FocusActivityInputWidget(),
                     const SizedBox(height: 32),
                     const FocusTimeInputWidget(),
-                    const SizedBox(height: 64),
+                    const SizedBox(height: 32),
                     FilledButton(
                       onPressed: () {
                         final currentFocus = FocusScope.of(context);

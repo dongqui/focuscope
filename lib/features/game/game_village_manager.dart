@@ -10,11 +10,14 @@ class GameVillageManager {
   onChangeTimerState(TimerStatus status, FlameGame game) {
     final gameRoot = game as GameRoot;
     final cat = gameRoot.gameWorld.cat;
+    final spaceMap = gameRoot.gameWorld.spaceMap;
 
     if (status == TimerStatus.running) {
       cat.dance();
+      spaceMap.setBaseVelocity(Vector2(40, 0));
     } else {
       cat.sleep();
+      spaceMap.setBaseVelocity(Vector2(0, 0));
     }
   }
 }

@@ -31,16 +31,14 @@ class GameRoot extends FlameGame
 
     // 컴포넌트 추가
     await addAll([gameWorld, gameCamera, gameEventManager]);
-
-    gameCamera.follow(gameWorld.villageMap);
   }
 
-  @override
-  void onDragUpdate(int pointerId, DragUpdateInfo info) {
-    final globalDelta = info.delta.global;
-    final localDelta = gameCamera.viewfinder.globalToLocal(Vector2.zero()) -
-        gameCamera.viewfinder.globalToLocal(globalDelta);
+  // @override
+  // void onDragUpdate(int pointerId, DragUpdateInfo info) {
+  //   final globalDelta = info.delta.global;
+  //   final localDelta = gameCamera.viewfinder.globalToLocal(Vector2.zero()) -
+  //       gameCamera.viewfinder.globalToLocal(globalDelta);
 
-    gameCamera.moveBy(localDelta);
-  }
+  //   gameCamera.moveBy(localDelta);
+  // }
 }
