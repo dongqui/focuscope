@@ -39,6 +39,7 @@ flutter:
   assets:
     - assets/tiles/
     - assets/images/
+    - assets/images/parallax/
     - assets/images/cat/
     - assets/images/cat/Cats/
     - assets/images/cat/Cats/Sprites/
