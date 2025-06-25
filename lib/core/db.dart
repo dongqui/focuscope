@@ -9,6 +9,10 @@ import 'package:catodo/features/overlays/data/repositories/latest_activity_repos
 import 'package:catodo/features/audio/data/datasources/audio_datasource.dart';
 import 'package:catodo/features/audio/data/repositories/audio_repository.dart';
 import 'package:catodo/features/audio/data/models/audio_model.dart';
+import 'package:catodo/features/characters/data/datasources/chacater-datasource.dart';
+import 'package:catodo/features/characters/data/repositories/character_repository.dart';
+import 'package:catodo/features/characters/data/datasources/selected_character_datasource.dart';
+import 'package:catodo/features/characters/data/repositories/selected_character_repository.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -40,10 +44,14 @@ class DatabaseService {
     final focusSessionDataSource = FocusSessionDataSource(isar);
     final latestActivityDataSource = LatestActivityDataSource(isar);
     final audioDataSource = AudioDataSource(isar);
+    final characterDataSource = CharacterDataSource(isar);
+    final selectedCharacterDataSource = SelectedCharacterDataSource(isar);
 
     // repository
     FocusSessionRepository.initialize(focusSessionDataSource);
     LatestActivityRepository.initialize(latestActivityDataSource);
     AudioRepository.initialize(audioDataSource);
+    CharacterRepository.initialize(characterDataSource);
+    SelectedCharacterRepository.initialize(selectedCharacterDataSource);
   }
 }
