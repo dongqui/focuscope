@@ -13,6 +13,8 @@ import 'package:catodo/features/characters/data/datasources/chacater-datasource.
 import 'package:catodo/features/characters/data/repositories/character_repository.dart';
 import 'package:catodo/features/characters/data/datasources/selected_character_datasource.dart';
 import 'package:catodo/features/characters/data/repositories/selected_character_repository.dart';
+import 'package:catodo/features/characters/data/models/character.dart';
+import 'package:catodo/features/characters/data/models/selected_character.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -25,7 +27,13 @@ class DatabaseService {
     final dir = await getApplicationDocumentsDirectory();
     if (Isar.instanceNames.isEmpty) {
       _isar = await Isar.open(
-        [FocusSessionSchema, LatestActivitySchema, AudioSchema],
+        [
+          FocusSessionSchema,
+          LatestActivitySchema,
+          AudioSchema,
+          CharacterSchema,
+          SelectedCharacterSchema
+        ],
         directory: dir.path,
       );
     } else {

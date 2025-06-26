@@ -1,3 +1,4 @@
+import 'package:catodo/features/characters/data/models/character.dart';
 import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
 import 'package:flame/game.dart';
 import 'package:catodo/features/game/game_root.dart';
@@ -13,9 +14,14 @@ class GameWorldManager {
     if (status == TimerStatus.idle) {
       gameRoot.addHomeWorld();
     } else if (status == TimerStatus.running) {
-      gameRoot.addGameWorld();
+      gameRoot.addTimerWorld();
     } else if (status == TimerStatus.paused) {
-      gameRoot.gameWorld.pause();
+      gameRoot.timerWorld.pause();
     } else if (status == TimerStatus.end) {}
+  }
+
+  onChangeCharacter(Character character, FlameGame game) {
+    final gameRoot = game as GameRoot;
+    gameRoot.setCurrentCharacter(character);
   }
 }

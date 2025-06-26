@@ -2,12 +2,12 @@ import 'package:flame/components.dart';
 import 'package:flame/parallax.dart';
 import 'dart:ui';
 
-import 'package:flame/components.dart';
 import 'package:flame/game.dart';
-import 'package:flame/parallax.dart';
+import 'package:flame/components.dart';
+import 'package:flutter/widgets.dart';
 
-class SpaceMap extends FlameGame {
-  late final ParallaxComponent parallaxComponent;
+class SpaceMap extends Component {
+  late final ParallaxComponent _parallaxComponent;
 
   // @override
   // Future<void> onLoad() async {
@@ -35,27 +35,37 @@ class SpaceMap extends FlameGame {
 
   @override
   Future<void> onLoad() async {
-    final layers = _layersMeta.entries.map(
-      (e) => loadParallaxLayer(
-        ParallaxImageData(e.key),
-        velocityMultiplier: Vector2(e.value, 1.0),
-        filterQuality: FilterQuality.none,
-      ),
+    final layers = await Future.wait(
+      _layersMeta.entries.map((entry) async {
+        final image = await ParallaxImageData(entry.key).load(
+          ImageRepeat.repeatX,
+          Alignment.bottomLeft,
+          LayerFill.height,
+          null,
+          FilterQuality.none,
+        );
+        return ParallaxLayer(
+          image,
+          velocityMultiplier: Vector2(entry.value, 1.0),
+        );
+      }),
     );
-    parallaxComponent = ParallaxComponent(
+
+    _parallaxComponent = ParallaxComponent(
       parallax: Parallax(
-        await Future.wait(layers),
+        layers,
         baseVelocity: Vector2(20, 0),
       ),
     );
-    add(parallaxComponent);
+
+    add(_parallaxComponent);
   }
 
   pause() {
-    parallaxComponent.parallax?.baseVelocity = Vector2(0, 0);
+    _parallaxComponent.parallax?.baseVelocity = Vector2(0, 0);
   }
 
   resume() {
-    parallaxComponent.parallax?.baseVelocity = Vector2(20, 0);
+    _parallaxComponent.parallax?.baseVelocity = Vector2(20, 0);
   }
 }
