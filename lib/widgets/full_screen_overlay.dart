@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class FullScreenOverlay extends StatelessWidget {
-  final Widget child;
+  final Widget Function(BuildContext, VoidCallback?) child;
   final Color backgroundColor;
-  final VoidCallback? onClose;
+  final VoidCallback onClose;
 
   const FullScreenOverlay({
     super.key,
     required this.child,
     this.backgroundColor = Colors.white,
-    this.onClose,
+    required this.onClose,
   });
 
   @override
@@ -27,18 +27,17 @@ class FullScreenOverlay extends StatelessWidget {
           child: Stack(
             children: [
               // 실제 콘텐츠
-              Positioned.fill(child: child),
+              Positioned.fill(child: child(context, onClose)),
 
               // 좌측 상단 닫기 버튼
-              if (onClose != null)
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: IconButton(
-                    icon: Icon(Icons.close, size: 28, color: Color(0xFFFFFFFF)),
-                    onPressed: onClose,
-                  ),
+              Positioned(
+                top: 8,
+                left: 8,
+                child: IconButton(
+                  icon: Icon(Icons.close, size: 28, color: Color(0xFFFFFFFF)),
+                  onPressed: onClose,
                 ),
+              ),
             ],
           ),
         ),

@@ -40,8 +40,4 @@ flutter:
     - assets/tiles/
     - assets/images/
     - assets/images/parallax/
-    - assets/images/cat/
-    - assets/images/cat/Cats/
-    - assets/images/cat/Cats/Sprites/
     - assets/sounds/
-    - assets/images/universe.webp

@@ -1,4 +1,5 @@
 {
   "@@locale": "en",
-  "helloWorld": "Hello World!"
+  "start": "Hello World!",
+  "home_message": "The more you focus, the farther your universe expands.\nWhich star will you discover today?"
 }

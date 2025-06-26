@@ -1,4 +1,5 @@
 {
   "@@locale": "ko",
-  "helloWorld": "시작!"
+  "start": "시작!",
+  "home_message": "The more you focus,\nthe farther your universe expands.\nWhich star will you discover today?"
 }
