@@ -97,7 +97,7 @@ class HomeOverlayState extends State<HomeOverlay>
           child: Padding(
             padding: const EdgeInsets.only(bottom: 100),
             child: ElevatedButton(
-              onPressed: () => TimerManager.instance.readyToFocus(),
+              onPressed: () => TimerManager.instance.setFocus(),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.white,
                 foregroundColor: Colors.black,

@@ -51,6 +51,14 @@ class GameRoot extends FlameGame
     gameCamera.world = homeWorld;
   }
 
+  startTimerWorld() async {
+    timerWorld.resume();
+  }
+
+  pauseTimerWorld() async {
+    timerWorld.pause();
+  }
+
   addTimerWorld() async {
     if (children.contains(homeWorld)) {
       remove(homeWorld);

@@ -4,6 +4,7 @@ import 'package:catodo/constants/index.dart';
 
 enum TimerStatus {
   idle,
+  ready,
   running,
   paused,
   input,
@@ -73,7 +74,7 @@ class TimerManager {
     _updateState(_state.copyWith(status: TimerStatus.running));
   }
 
-  void readyToFocus() {
+  void setFocus() {
     _updateState(_state.copyWith(status: TimerStatus.input));
   }
 
@@ -82,6 +83,10 @@ class TimerManager {
       _updateState(_state.copyWith(status: TimerStatus.paused));
       _timer.cancel();
     }
+  }
+
+  void readyToFocus() {
+    _updateState(_state.copyWith(status: TimerStatus.ready));
   }
 
   void finish() {

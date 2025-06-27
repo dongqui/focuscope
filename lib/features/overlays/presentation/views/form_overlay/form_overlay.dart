@@ -94,7 +94,7 @@ class _FormOverlayState extends State<FormOverlay>
                           currentFocus.unfocus();
                           return;
                         }
-                        TimerManager.instance.start();
+                        TimerManager.instance.readyToFocus();
                       },
                       style: FilledButton.styleFrom(
                         backgroundColor: Color(0xFF3A86FF),

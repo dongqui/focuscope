@@ -1,7 +1,7 @@
 import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
 import 'package:flame/game.dart';
 
-enum GameOverlay { home, timer, form, focusEnd, audio }
+enum GameOverlay { home, timer, form, focusEnd, audio, ready }
 
 class GameOverlayManager {
   static final GameOverlayManager _instance = GameOverlayManager._internal();
@@ -18,6 +18,8 @@ class GameOverlayManager {
       game.overlays.add(GameOverlay.form.name);
     } else if (status == TimerStatus.end) {
       game.overlays.add(GameOverlay.focusEnd.name);
+    } else if (status == TimerStatus.ready) {
+      game.overlays.add(GameOverlay.ready.name);
     }
   }
 }

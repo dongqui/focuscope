@@ -9,6 +9,7 @@ import 'package:catodo/core/init.dart';
 import 'features/overlays/presentation/views/focus_end_overlay.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'features/overlays/presentation/views/ready_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -53,6 +54,7 @@ class MyApp extends StatelessWidget {
                 GameOverlay.form.name: (context, game) => const FormOverlay(),
                 GameOverlay.focusEnd.name: (context, game) =>
                     const FocusEndOverlay(),
+                GameOverlay.ready.name: (context, game) => const ReadyOverlay(),
               },
               initialActiveOverlays: [GameOverlay.home.name],
             ),
