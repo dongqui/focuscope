@@ -118,24 +118,36 @@ class _CharacterSelectorsState extends State<CharacterSelectors> {
                 duration: const Duration(milliseconds: 200),
                 margin: EdgeInsets.symmetric(
                     horizontal: 8, vertical: isSelected ? 0 : 20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: isSelected ? 128 : 64,
-                      height: isSelected ? 128 : 64,
-                      child: isSelected
-                          ? SpriteAnimationWidget(
-                              animation: _characterTravelAnimations[index],
-                              animationTicker: SpriteAnimationTicker(
-                                  _characterTravelAnimations[index]),
-                            )
-                          : SpriteAnimationWidget(
-                              animation: _characterIdleAnimations[index],
-                              animationTicker: SpriteAnimationTicker(
-                                  _characterIdleAnimations[index])),
-                    ),
-                  ],
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      _selectedCharacterName = character.name;
+                      _pageController.animateToPage(
+                        index,
+                        duration: const Duration(milliseconds: 200),
+                        curve: Curves.easeInOut,
+                      );
+                    });
+                  },
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: isSelected ? 128 : 64,
+                        height: isSelected ? 128 : 64,
+                        child: isSelected
+                            ? SpriteAnimationWidget(
+                                animation: _characterTravelAnimations[index],
+                                animationTicker: SpriteAnimationTicker(
+                                    _characterTravelAnimations[index]),
+                              )
+                            : SpriteAnimationWidget(
+                                animation: _characterIdleAnimations[index],
+                                animationTicker: SpriteAnimationTicker(
+                                    _characterIdleAnimations[index])),
+                      ),
+                    ],
+                  ),
                 ),
               );
             },
