@@ -3,19 +3,27 @@ import 'planet.dart';
 import 'stars.dart';
 import 'home_traveller.dart';
 import 'package:catodo/features/characters/data/models/character.dart';
+import 'flowstar.dart';
 
 class HomeWorld extends World with HasGameReference {
   late final Planet planet;
   late final Stars stars;
+  late final FlowStar flowstar_right;
+  late final FlowStar flowstar_left;
   HomeTraveller? traveller;
 
   @override
   Future<void> onLoad() async {
-    planet = Planet();
-    stars = Stars();
+    planet = Planet()..priority = 2;
+    stars = Stars()..priority = 1;
+    flowstar_right = FlowStar(FlowStarDirection.right)
+      ..position = Vector2(game.size.x / 2, game.size.y / 2)
+      ..priority = 0;
+    flowstar_left = FlowStar(FlowStarDirection.left)
+      ..position = Vector2(game.size.x / 2, game.size.y / 2)
+      ..priority = 0;
 
-    // planet.position = Vector2(game.size.x / 2, game.size.y / 2);
-    await addAll([planet, stars]);
+    await addAll([planet, stars, flowstar_right, flowstar_left]);
   }
 
   setTraveller(Character character) {
@@ -24,7 +32,8 @@ class HomeWorld extends World with HasGameReference {
     }
 
     traveller = HomeTraveller(
-        imagePath: character.idleSprite, frames: character.idleFrames);
+        imagePath: character.idleSprite, frames: character.idleFrames)
+      ..priority = 2;
 
     add(traveller!);
   }
