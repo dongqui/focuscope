@@ -1,4 +1,4 @@
-import 'package:catodo/features/dashboard/presentation/viewmodels/chart_state.dart';
+import 'package:catodo/features/presentation/viewmodels/chart_state.dart';
 
 class DateHelper {
   /// 하루의 시작 시간 구하기 (00:00:00)

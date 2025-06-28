@@ -1,9 +1,9 @@
 import 'package:catodo/features/game/game_overlay_manager.dart';
 import 'package:flame/components.dart';
 import 'game_event_bus.dart';
-import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
+import 'package:catodo/features/presentation/viewmodels/timer_state.dart';
 import 'package:catodo/features/game/game_world_manager.dart';
-import 'package:catodo/features/characters/presentation/viewmodels/characater_state.dart';
+import 'package:catodo/features/presentation/viewmodels/characater_state.dart';
 
 class GameEventManager extends Component with HasGameReference {
   final _gameEventBus = GameEventBus.instance;

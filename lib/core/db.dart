@@ -1,20 +1,20 @@
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:catodo/shared_domain/focus_session/models/focus_session_model.dart';
-import 'package:catodo/features/overlays/data/models/latest-activity-model.dart';
-import 'package:catodo/shared_domain/focus_session/datasources/focus_session_datasource.dart';
-import 'package:catodo/features/overlays/data/datasources/latest-activity-datasource.dart';
-import 'package:catodo/shared_domain/focus_session/repositories/focus_session_repository.dart';
-import 'package:catodo/features/overlays/data/repositories/latest_activity_repository.dart';
-import 'package:catodo/features/audio/data/datasources/audio_datasource.dart';
-import 'package:catodo/features/audio/data/repositories/audio_repository.dart';
-import 'package:catodo/features/audio/data/models/audio_model.dart';
-import 'package:catodo/features/characters/data/datasources/chacater-datasource.dart';
-import 'package:catodo/features/characters/data/repositories/character_repository.dart';
-import 'package:catodo/features/characters/data/datasources/selected_character_datasource.dart';
-import 'package:catodo/features/characters/data/repositories/selected_character_repository.dart';
-import 'package:catodo/features/characters/data/models/character.dart';
-import 'package:catodo/features/characters/data/models/selected_character.dart';
+import 'package:catodo/features/data/models/focus_session_model.dart';
+import 'package:catodo/features/data/models/latest-activity-model.dart';
+import 'package:catodo/features/data/datasources/focus_session_datasource.dart';
+import 'package:catodo/features/data/datasources/latest-activity-datasource.dart';
+import 'package:catodo/features/data/repositories/focus_session_repository.dart';
+import 'package:catodo/features/data/repositories/latest_activity_repository.dart';
+import 'package:catodo/features/data/datasources/audio_datasource.dart';
+import 'package:catodo/features/data/repositories/audio_repository.dart';
+import 'package:catodo/features/data/models/audio_model.dart';
+import 'package:catodo/features/data/datasources/chacater-datasource.dart';
+import 'package:catodo/features/data/repositories/character_repository.dart';
+import 'package:catodo/features/data/datasources/selected_character_datasource.dart';
+import 'package:catodo/features/data/repositories/selected_character_repository.dart';
+import 'package:catodo/features/data/models/character.dart';
+import 'package:catodo/features/data/models/selected_character.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();

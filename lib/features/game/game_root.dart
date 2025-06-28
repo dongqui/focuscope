@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'components/home/home_world.dart';
 import 'events/game_event_manager.dart';
 import 'components/timer/timer_world.dart';
-import 'package:catodo/features/characters/data/models/character.dart';
+import 'package:catodo/features/data/models/character.dart';
 
 class GameRoot extends FlameGame
     with SingleGameInstance, MultiTouchDragDetector {

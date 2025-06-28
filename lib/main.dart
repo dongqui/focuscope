@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flame/game.dart';
 import 'features/game/game_root.dart';
-import 'features/overlays/presentation/views/timer_overlay/timer_overlay.dart';
-import 'features/overlays/presentation/views/home_overlay.dart';
-import 'features/overlays/presentation/views/form_overlay/form_overlay.dart';
+import 'features/presentation/views/overlays/timer_overlay/timer_overlay.dart';
+import 'features/presentation/views/overlays/home_overlay.dart';
+import 'features/presentation/views/overlays/form_overlay/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 import 'package:catodo/core/init.dart';
-import 'features/overlays/presentation/views/focus_end_overlay.dart';
+import 'features/presentation/views/overlays/focus_end_overlay.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'features/overlays/presentation/views/ready_overlay.dart';
+import 'features/presentation/views/overlays/ready_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

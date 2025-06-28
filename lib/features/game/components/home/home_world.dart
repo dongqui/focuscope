@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'planet.dart';
 import 'stars.dart';
 import 'home_traveller.dart';
-import 'package:catodo/features/characters/data/models/character.dart';
+import 'package:catodo/features/data/models/character.dart';
 import 'flowstar.dart';
 
 class HomeWorld extends World with HasGameReference {

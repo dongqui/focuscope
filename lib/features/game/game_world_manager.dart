@@ -1,5 +1,5 @@
-import 'package:catodo/features/characters/data/models/character.dart';
-import 'package:catodo/features/overlays/presentation/viewmodels/timer_state.dart';
+import 'package:catodo/features/data/models/character.dart';
+import 'package:catodo/features/presentation/viewmodels/timer_state.dart';
 import 'package:flame/game.dart';
 import 'package:catodo/features/game/game_root.dart';
 
