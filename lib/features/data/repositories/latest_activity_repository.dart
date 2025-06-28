@@ -30,4 +30,8 @@ class LatestActivityRepository {
   Future<void> deleteActivity(int id) {
     return dataSource.deleteActivity(id);
   }
+
+  Future<List<LatestActivity>> getLatestActivities() async {
+    return await dataSource.getLatestActivities();
+  }
 }

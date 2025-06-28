@@ -17,4 +17,8 @@ class LatestActivityDataSource {
       await _isar.latestActivitys.delete(id);
     });
   }
+
+  Future<List<LatestActivity>> getLatestActivities() async {
+    return await _isar.latestActivitys.where().findAll();
+  }
 }

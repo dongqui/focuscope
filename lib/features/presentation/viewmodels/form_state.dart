@@ -2,6 +2,7 @@ import 'package:catodo/features/data/models/latest-activity-model.dart';
 import 'package:catodo/features/data/repositories/focus_session_repository.dart';
 import 'package:catodo/features/data/models/focus_session_model.dart';
 import 'package:catodo/constants/index.dart';
+import 'package:catodo/features/data/repositories/latest_activity_repository.dart';
 
 class FocusForm {
   final String activity;
@@ -44,7 +45,7 @@ class FormManager {
   FocusForm get state => _state;
 
   Future<List<LatestActivity>> getLatestActivities() async {
-    return [LatestActivity(id: 1, name: '테스트', timestamp: DateTime.now())];
+    return await LatestActivityRepository.instance.getLatestActivities();
   }
 
   void addListener(void Function(FocusForm) listener) {
