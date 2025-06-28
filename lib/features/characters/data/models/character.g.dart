@@ -91,13 +91,13 @@ Character _characterDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Character(
+    id: id,
     idleFrames: reader.readLongList(offsets[0]) ?? [],
     idleSprite: reader.readString(offsets[1]),
     name: reader.readString(offsets[2]),
     travelSprite: reader.readString(offsets[3]),
     travelframes: reader.readLongList(offsets[4]) ?? [],
   );
-  object.id = id;
   return object;
 }
 

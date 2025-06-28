@@ -4,12 +4,14 @@ part 'character.g.dart';
 
 final List<Character> defaultCharacters = [
   Character(
+      id: 1,
       name: 'astronaut',
       travelframes: [0, 1, 2, 3, 2, 1],
       travelSprite: 'astronaut_travel.png',
       idleSprite: 'astronaut_idle.png',
       idleFrames: [0]),
   Character(
+      id: 2,
       name: 'dog_white',
       travelframes: [0, 1, 2, 3],
       travelSprite: 'dog_white_travel.png',
@@ -19,7 +21,8 @@ final List<Character> defaultCharacters = [
 
 @Collection()
 class Character {
-  Id id = Isar.autoIncrement;
+  @Index(unique: true)
+  Id id;
   late String name;
   late List<int> travelframes;
   late String travelSprite;
@@ -27,6 +30,7 @@ class Character {
   late List<int> idleFrames;
 
   Character({
+    required this.id,
     required this.name,
     required this.travelframes,
     required this.travelSprite,
@@ -35,6 +39,7 @@ class Character {
   });
 
   factory Character.fromJson(Map<String, dynamic> json) => Character(
+        id: json['id'],
         name: json['name'],
         travelframes: json['travelframes'],
         travelSprite: json['travelSprite'],
