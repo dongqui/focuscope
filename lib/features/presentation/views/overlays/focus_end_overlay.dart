@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:catodo/features/presentation/viewmodels/timer_state.dart';
 import 'package:catodo/features/presentation/viewmodels/form_state.dart';
+import 'package:catodo/features/presentation/views/discovery_progress.dart';
 
 class FocusEndOverlay extends StatefulWidget {
   const FocusEndOverlay({super.key});
@@ -22,13 +23,19 @@ class _FocusEndOverlayState extends State<FocusEndOverlay> {
           height: double.infinity,
         ),
         Center(
-          child: ElevatedButton(
-            onPressed: () {
-              int focussedTime = TimerManager.instance.state.focussedTime;
-              FormManager.instance.save(focussedTime);
-              TimerManager.instance.save();
-            },
-            child: Text('확인'),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              DiscoveryProgress(),
+              ElevatedButton(
+                onPressed: () {
+                  int focussedTime = TimerManager.instance.state.focussedTime;
+                  FormManager.instance.save(focussedTime);
+                  TimerManager.instance.save();
+                },
+                child: Text('확인'),
+              ),
+            ],
           ),
         ),
       ],

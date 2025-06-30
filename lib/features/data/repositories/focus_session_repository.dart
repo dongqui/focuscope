@@ -40,4 +40,10 @@ class FocusSessionRepository {
       DateUnit unit, DateTime date) async {
     return await dataSource.getFocusSessionsByDateRange(unit, date);
   }
+
+  // ID 리스트로 FocusSession 리스트 조회
+  Future<List<FocusSession>> getFocusSessionsByIds(List<int> ids) async {
+    final sessions = await dataSource.getFocusSessionsByIds(ids);
+    return sessions.whereType<FocusSession>().toList();
+  }
 }

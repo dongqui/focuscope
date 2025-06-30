@@ -15,6 +15,10 @@ import 'package:catodo/features/data/datasources/selected_character_datasource.d
 import 'package:catodo/features/data/repositories/selected_character_repository.dart';
 import 'package:catodo/features/data/models/character.dart';
 import 'package:catodo/features/data/models/selected_character.dart';
+import 'package:catodo/features/data/datasources/discovery_datasource.dart';
+import 'package:catodo/features/data/repositories/discovery_repository.dart';
+import 'package:catodo/features/data/models/discovery.dart';
+import 'package:catodo/features/data/models/planet.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -32,7 +36,9 @@ class DatabaseService {
           LatestActivitySchema,
           AudioSchema,
           CharacterSchema,
-          SelectedCharacterSchema
+          SelectedCharacterSchema,
+          DiscoverySchema,
+          PlanetSchema,
         ],
         directory: dir.path,
       );
@@ -54,6 +60,7 @@ class DatabaseService {
     final audioDataSource = AudioDataSource(isar);
     final characterDataSource = CharacterDataSource(isar);
     final selectedCharacterDataSource = SelectedCharacterDataSource(isar);
+    final discoveryDataSource = DiscoveryDataSource(isar);
 
     // repository
     FocusSessionRepository.initialize(focusSessionDataSource);
@@ -61,5 +68,6 @@ class DatabaseService {
     AudioRepository.initialize(audioDataSource);
     CharacterRepository.initialize(characterDataSource);
     SelectedCharacterRepository.initialize(selectedCharacterDataSource);
+    DiscoveryRepository.initialize(discoveryDataSource);
   }
 }

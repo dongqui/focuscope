@@ -97,4 +97,9 @@ class FocusSessionDataSource {
 
     return result;
   }
+
+  // ID 리스트로 FocusSession 리스트 조회
+  Future<List<FocusSession?>> getFocusSessionsByIds(List<int> ids) async {
+    return await _isar.focusSessions.getAll(ids);
+  }
 }
