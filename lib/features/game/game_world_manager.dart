@@ -14,13 +14,13 @@ class GameWorldManager {
     if (status == TimerStatus.idle) {
       gameRoot.addHomeWorld();
     } else if (status == TimerStatus.ready) {
-      gameRoot.addTimerWorld();
-      gameRoot.pauseTimerWorld();
+      await gameRoot.addTimerWorld();
+      // gameRoot.pauseTimerWorld();
     } else if (status == TimerStatus.running) {
-      gameRoot.addTimerWorld();
+      await gameRoot.addTimerWorld();
       gameRoot.startTimerWorld();
     } else if (status == TimerStatus.paused) {
-      gameRoot.timerWorld.pause();
+      gameRoot.pauseTimerWorld();
     } else if (status == TimerStatus.end) {}
   }
 

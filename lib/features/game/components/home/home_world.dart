@@ -28,13 +28,13 @@ class HomeWorld extends World with HasGameReference {
 
   setTraveller(Character character) {
     if (traveller != null) {
-      remove(traveller!);
+      traveller?.setCharacter(character.idleSprite, character.idleFrames);
+    } else {
+      traveller = HomeTraveller(
+          imagePath: character.idleSprite, frames: character.idleFrames)
+        ..priority = 2;
+
+      add(traveller!);
     }
-
-    traveller = HomeTraveller(
-        imagePath: character.idleSprite, frames: character.idleFrames)
-      ..priority = 2;
-
-    add(traveller!);
   }
 }

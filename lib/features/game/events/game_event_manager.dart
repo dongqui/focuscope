@@ -15,7 +15,9 @@ class GameEventManager extends Component with HasGameReference {
   @override
   Future<void> onLoad() async {
     _timerManager.addListenerToStatus(_handleTimerStateChanged);
-    _characterManager.addListener(_handleCharacterChanged);
+    _characterManager.addListener(_handleCharacterChanged,
+        filter: (state, lastState) =>
+            state.selectedCharacter != lastState?.selectedCharacter);
     _gameEventBus.stream.listen(_handleGameEvent);
   }
 
