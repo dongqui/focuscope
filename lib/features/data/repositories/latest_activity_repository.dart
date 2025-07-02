@@ -23,12 +23,12 @@ class LatestActivityRepository {
     _instance ??= LatestActivityRepository._internal(dataSource);
   }
 
-  Future<void> addActivity(LatestActivity activity) {
+  Future<void> addLatestActivity(LatestActivity activity) {
     return dataSource.addActivity(activity);
   }
 
-  Future<void> deleteActivity(int id) {
-    return dataSource.deleteActivity(id);
+  Future<void> removeLatestActivity(String activity) {
+    return dataSource.removeLatestActivity(activity);
   }
 
   Future<List<LatestActivity>> getLatestActivities() async {

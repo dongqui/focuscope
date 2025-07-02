@@ -12,9 +12,9 @@ class LatestActivityDataSource {
     });
   }
 
-  Future<void> deleteActivity(int id) async {
+  Future<void> removeLatestActivity(String activity) async {
     await _isar.writeTxn(() async {
-      await _isar.latestActivitys.delete(id);
+      await _isar.latestActivitys.filter().nameEqualTo(activity).deleteAll();
     });
   }
 
