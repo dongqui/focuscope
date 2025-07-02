@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:catodo/features/presentation/viewmodels/timer_state.dart';
 import 'package:catodo/features/presentation/views/overlays/form_overlay/focus_activity_input_widget.dart';
 import 'package:catodo/features/presentation/views/overlays/form_overlay/focus_time_input_widget.dart';
+import 'package:catodo/features/presentation/viewmodels/form_state.dart';
 
 class FormOverlay extends StatefulWidget {
   const FormOverlay({super.key});
@@ -14,7 +15,6 @@ class _FormOverlayState extends State<FormOverlay>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<Offset> _offsetAnimation;
-  final _focusTextController = TextEditingController();
 
   @override
   void initState() {
@@ -36,7 +36,7 @@ class _FormOverlayState extends State<FormOverlay>
   @override
   void dispose() {
     _controller.dispose();
-    _focusTextController.dispose();
+
     super.dispose();
   }
 
@@ -89,8 +89,8 @@ class _FormOverlayState extends State<FormOverlay>
                     const SizedBox(height: 32),
                     FilledButton(
                       onPressed: () {
-                        final currentFocus = FocusScope.of(context);
-                        if (currentFocus.hasFocus) {
+                        if (FormManager.instance.state.isFocused) {
+                          final currentFocus = FocusScope.of(context);
                           currentFocus.unfocus();
                           return;
                         }

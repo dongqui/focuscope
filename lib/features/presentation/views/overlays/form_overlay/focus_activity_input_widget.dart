@@ -11,29 +11,34 @@ class FocusActivityInputWidget extends StatefulWidget {
 class _State extends State<FocusActivityInputWidget> {
   late List<String> _tags = [];
   final TextEditingController _focusTextController = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     FormManager.instance.addListener(_onFormStateChanged);
     initTags();
+    _focusNode.addListener(() {
+      FormManager.instance.updateIsFocused(_focusNode.hasFocus);
+    });
   }
 
   @override
   void dispose() {
     // 리스너 제거
     FormManager.instance.removeListener(_onFormStateChanged);
-
+    _focusNode.dispose();
     super.dispose();
   }
 
-  void _onFormStateChanged(FocusForm state) {}
+  void _onFormStateChanged(FocusForm state) {
+    setState(() {
+      _tags = state.latestActivities;
+    });
+  }
 
   void initTags() async {
-    final tags = await FormManager.instance.getLatestActivities();
-    setState(() {
-      _tags = tags.map((tag) => tag.name).toList();
-    });
+    await FormManager.instance.getLatestActivities();
   }
 
   @override
@@ -56,6 +61,7 @@ class _State extends State<FocusActivityInputWidget> {
           onChanged: (text) {
             FormManager.instance.updateActivity(text);
           },
+          focusNode: _focusNode,
           decoration: const InputDecoration(
             fillColor: Color(0xFF0D1B2A),
             hintText: '예: 수학 문제 풀기, 영어 단어 외우기',
@@ -82,7 +88,7 @@ class _State extends State<FocusActivityInputWidget> {
                           deleteIcon: const Icon(Icons.close),
                           onDeleted: () {
                             setState(() {
-                              _tags.remove(tag);
+                              FormManager.instance.removeLatestActivity(tag);
                             });
                           },
                         ),

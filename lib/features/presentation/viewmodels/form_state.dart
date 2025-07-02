@@ -8,22 +8,30 @@ class FocusForm {
   final String activity;
   final int duration;
   final DateTime date;
+  final List<String> latestActivities;
+  final bool isFocused;
 
   const FocusForm({
     required this.activity,
     required this.duration,
     required this.date,
+    required this.latestActivities,
+    this.isFocused = false,
   });
 
   FocusForm copyWith({
     String? activity,
     int? duration,
     DateTime? date,
+    List<String>? latestActivities,
+    bool? isFocused,
   }) {
     return FocusForm(
       activity: activity ?? this.activity,
       duration: duration ?? this.duration,
       date: date ?? this.date,
+      latestActivities: latestActivities ?? this.latestActivities,
+      isFocused: isFocused ?? this.isFocused,
     );
   }
 }
@@ -40,12 +48,36 @@ class FormManager {
           activity: '',
           duration: DEFAULT_WORK_TIME,
           date: DateTime.now(),
+          latestActivities: [],
+          isFocused: false,
         );
 
   FocusForm get state => _state;
 
   Future<List<LatestActivity>> getLatestActivities() async {
-    return await LatestActivityRepository.instance.getLatestActivities();
+    final activities =
+        await LatestActivityRepository.instance.getLatestActivities();
+    _updateState(_state.copyWith(
+        latestActivities: activities.map((e) => e.name).toList()));
+    return activities;
+  }
+
+  void removeLatestActivity(String activity) async {
+    await LatestActivityRepository.instance.removeLatestActivity(activity);
+    _updateState(_state.copyWith(
+        latestActivities:
+            _state.latestActivities.where((e) => e != activity).toList()));
+  }
+
+  void addLatestActivity() {
+    if (!_state.latestActivities.contains(_state.activity)) {
+      LatestActivityRepository.instance.addLatestActivity(LatestActivity(
+        name: _state.activity,
+        timestamp: DateTime.now(),
+      ));
+      _updateState(_state.copyWith(
+          latestActivities: [..._state.latestActivities, _state.activity]));
+    }
   }
 
   void addListener(void Function(FocusForm) listener) {
@@ -69,6 +101,10 @@ class FormManager {
     for (var listener in _listeners) {
       listener(_state);
     }
+  }
+
+  void updateIsFocused(bool isFocused) {
+    _updateState(_state.copyWith(isFocused: isFocused));
   }
 
   void save(int focussedTime) {
