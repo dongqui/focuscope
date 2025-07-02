@@ -108,7 +108,31 @@ class _TimerOverlayState extends State<TimerOverlay> {
               const SizedBox(width: 16),
               IconButton(
                 color: Color(0xffffffff),
-                onPressed: _timerManager.finish,
+                onPressed: () async {
+                  TimerManager.instance.pause();
+                  final shouldFinish = await showDialog<bool>(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('종료'),
+                      content: Text('정말로 집중을 그만두시겠습니까?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(false),
+                          child: Text('아니오'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(context).pop(true),
+                          child: Text('예'),
+                        ),
+                      ],
+                    ),
+                  );
+                  if (shouldFinish == true) {
+                    _timerManager.finish();
+                  } else {
+                    _timerManager.start();
+                  }
+                },
                 icon: Icon(
                   Icons.stop,
                 ),
