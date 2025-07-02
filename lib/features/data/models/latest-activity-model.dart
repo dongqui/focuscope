@@ -10,7 +10,6 @@ class LatestActivity {
   bool hasDeleted = false;
 
   LatestActivity({
-    required this.id,
     required this.name,
     required this.timestamp,
   });
@@ -24,7 +23,6 @@ class LatestActivity {
 
   factory LatestActivity.fromJson(Map<String, dynamic> json) {
     return LatestActivity(
-      id: json['id'],
       name: json['name'],
       timestamp: DateTime.parse(json['timestamp']),
     );

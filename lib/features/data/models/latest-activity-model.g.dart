@@ -75,11 +75,11 @@ LatestActivity _latestActivityDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = LatestActivity(
-    id: id,
     name: reader.readString(offsets[1]),
     timestamp: reader.readDateTime(offsets[2]),
   );
   object.hasDeleted = reader.readBool(offsets[0]);
+  object.id = id;
   return object;
 }
 
