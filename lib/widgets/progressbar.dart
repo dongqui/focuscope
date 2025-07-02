@@ -21,11 +21,13 @@ class ProgressBarPainter extends CustomPainter {
       backgroundPaint,
     );
     // 진행 바
-    canvas.drawLine(
-      Offset(0, size.height / 2),
-      Offset(size.width * progress, size.height / 2),
-      progressPaint,
-    );
+    if (progress > 0) {
+      canvas.drawLine(
+        Offset(0, size.height / 2),
+        Offset(size.width * progress, size.height / 2),
+        progressPaint,
+      );
+    }
   }
 
   @override

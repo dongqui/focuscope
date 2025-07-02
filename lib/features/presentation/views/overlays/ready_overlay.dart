@@ -25,7 +25,7 @@ class _ReadyOverlayState extends State<ReadyOverlay>
 
   void _startCharFadeOut() async {
     // 2초 동안 글자 모두 보이기
-    await Future.delayed(const Duration(milliseconds: 2000));
+    await Future.delayed(const Duration(milliseconds: 1000));
     // 2초 동안 글자 순차적으로 사라지기
     const fadeOutDuration = 2000;
     final perCharDelay = (fadeOutDuration / message.length).floor();

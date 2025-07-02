@@ -27,13 +27,14 @@ class _FocusEndOverlayState extends State<FocusEndOverlay> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               DiscoveryProgress(),
+              SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () {
                   int focussedTime = TimerManager.instance.state.focussedTime;
                   FormManager.instance.save(focussedTime);
                   TimerManager.instance.save();
                 },
-                child: Text('확인'),
+                child: Text('계속 하기'),
               ),
             ],
           ),

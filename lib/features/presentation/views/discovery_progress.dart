@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:catodo/features/presentation/viewmodels/discovery_state.dart';
 import 'dart:math';
 
+import 'package:catodo/widgets/progressbar.dart';
+
 class FocusItem {
   final double progress; // 0.0 ~ 1.0
   final String label;
@@ -82,67 +84,102 @@ class _DiscoveryProgressState extends State<DiscoveryProgress> {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = max(0.1, _progress);
+    final double progress = 0.72;
     final double planetSize = 256;
-    // 최소 알파값(0일 때 실루엣이 보이도록)
-    final double minAlpha = 0.7;
-    final double bottomAlpha =
-        (minAlpha + (1.0 - minAlpha) * (1.0 - progress)).clamp(minAlpha, 1.0);
+    // minAlpha 제거, bottomAlpha는 0.0~1.0로만 동작
+    final double bottomAlpha = (1.0 - max(0.1, progress)).clamp(0.0, 1.0);
     final String progressMessage = getProgressMessage(progress);
 
-    return SizedBox(
-      width: planetSize,
-      height: planetSize,
-      child: Stack(
-        children: [
-          // 행성 이미지 (아래)
-          Image.asset(
-            'assets/images/planet.png',
-            width: planetSize,
-            height: planetSize,
-            fit: BoxFit.cover,
-          ),
-          // 전체 그라데이션 덮개 (위->아래, 검정->반투명)
-          Container(
-            width: planetSize,
-            height: planetSize,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.black,
-                  Color.fromRGBO(0, 0, 0, bottomAlpha),
-                ],
-                stops: const [0.0, 1.0],
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          width: planetSize,
+          height: planetSize,
+          child: Stack(
+            children: [
+              // 행성 이미지 (아래)
+              Image.asset(
+                'assets/images/planet_1.png',
+                width: planetSize,
+                height: planetSize,
+                fit: BoxFit.cover,
               ),
-            ),
-          ),
-          // 메시지 표시
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 16.0),
-              child: Text(
-                progressMessage,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  shadows: [
-                    Shadow(
-                      blurRadius: 4,
-                      color: Colors.black.withOpacity(0.7),
-                      offset: Offset(1, 1),
-                    ),
-                  ],
+              // 전체 그라데이션 덮개 (위->아래, 검정->반투명)
+              Container(
+                width: planetSize,
+                height: planetSize,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.black,
+                      Color.fromRGBO(0, 0, 0, bottomAlpha),
+                    ],
+                    stops: const [0.0, 1.0],
+                  ),
                 ),
-                textAlign: TextAlign.center,
-              ),
-            ),
+              )
+            ],
           ),
-        ],
-      ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            // 왼쪽: 여행자 이미지
+            Image.asset(
+              'assets/images/astronaut_idle.png',
+              width: 32,
+              height: 32,
+            ),
+            const SizedBox(width: 16),
+            // 가운데: 프로그레스바와 텍스트
+            Column(
+              children: [
+                Text(''),
+                CustomPaint(
+                  size: const Size(256, 20),
+                  painter: ProgressBarPainter(progress: progress),
+                ),
+                Text(
+                  '${(progress * 100).toStringAsFixed(progress < 0.1 ? 2 : 1)}%',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            const SizedBox(width: 16),
+            // 오른쪽: 행성 이미지
+            Image.asset(
+              'assets/images/planet.png',
+              width: 32,
+              height: 32,
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        Text(
+          progressMessage,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            shadows: [
+              Shadow(
+                blurRadius: 4,
+                color: Colors.black.withOpacity(0.7),
+                offset: Offset(1, 1),
+              ),
+            ],
+          ),
+          textAlign: TextAlign.center,
+        ),
+      ],
     );
   }
 }

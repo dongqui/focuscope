@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
                     const FocusEndOverlay(),
                 GameOverlay.ready.name: (context, game) => const ReadyOverlay(),
               },
-              initialActiveOverlays: [GameOverlay.focusEnd.name],
+              initialActiveOverlays: [GameOverlay.home.name],
             ),
           ),
         ),

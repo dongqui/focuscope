@@ -30,7 +30,9 @@ class SpaceMap extends Component {
   ''';
 
   final _layersMeta = {
-    'parallax/stars_top.png': 0.5,
+    'parallax/stars_top.png': 0.1,
+    'parallax/stars_mid.png': 0.5,
+    'parallax/stars_bot.png': 0.9,
   };
 
   @override
