@@ -2,6 +2,10 @@ import 'package:isar/isar.dart';
 
 part 'planet.g.dart';
 
+final defaultPlanets = [
+  Planet(id: 1, name: '', image: 'planets/planet_1.png'),
+];
+
 @Collection()
 class Planet {
   Id id;

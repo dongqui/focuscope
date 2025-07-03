@@ -90,7 +90,7 @@ class BaseChart extends StatelessWidget {
         width: 10,
       ));
     }
-    print('$x ${barRods.length}');
+
     return BarChartGroupData(
       x: x,
       groupVertically: true,

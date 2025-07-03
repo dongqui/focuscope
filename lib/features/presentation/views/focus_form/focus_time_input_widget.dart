@@ -45,7 +45,7 @@ class _FocusTimeInputWidgetState extends State<FocusTimeInputWidget> {
     super.dispose();
   }
 
-  void _onFormStateChanged(FocusForm state) {}
+  void _onFormStateChanged(FocusFormState state) {}
 
   @override
   Widget build(BuildContext context) {

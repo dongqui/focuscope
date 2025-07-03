@@ -19,6 +19,8 @@ import 'package:catodo/features/data/datasources/discovery_datasource.dart';
 import 'package:catodo/features/data/repositories/discovery_repository.dart';
 import 'package:catodo/features/data/models/discovery.dart';
 import 'package:catodo/features/data/models/planet.dart';
+import 'package:catodo/features/data/datasources/planet_datasource.dart';
+import 'package:catodo/features/data/repositories/planet_repository.dart';
 
 class DatabaseService {
   static final DatabaseService _instance = DatabaseService._internal();
@@ -61,6 +63,7 @@ class DatabaseService {
     final characterDataSource = CharacterDataSource(isar);
     final selectedCharacterDataSource = SelectedCharacterDataSource(isar);
     final discoveryDataSource = DiscoveryDataSource(isar);
+    final planetDataSource = PlanetDataSource(isar);
 
     // repository
     FocusSessionRepository.initialize(focusSessionDataSource);
@@ -69,5 +72,6 @@ class DatabaseService {
     CharacterRepository.initialize(characterDataSource);
     SelectedCharacterRepository.initialize(selectedCharacterDataSource);
     DiscoveryRepository.initialize(discoveryDataSource);
+    PlanetRepository.initialize(planetDataSource);
   }
 }

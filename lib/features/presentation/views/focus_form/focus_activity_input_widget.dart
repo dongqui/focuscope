@@ -31,7 +31,7 @@ class _State extends State<FocusActivityInputWidget> {
     super.dispose();
   }
 
-  void _onFormStateChanged(FocusForm state) {
+  void _onFormStateChanged(FocusFormState state) {
     setState(() {
       _tags = state.latestActivities;
     });

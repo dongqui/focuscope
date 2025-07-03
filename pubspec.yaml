@@ -40,4 +40,5 @@ flutter:
     - assets/tiles/
     - assets/images/
     - assets/images/parallax/
+    - assets/images/planets/
     - assets/sounds/

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:catodo/features/presentation/viewmodels/timer_state.dart';
-import 'package:catodo/features/presentation/views/overlays/form_overlay/focus_activity_input_widget.dart';
-import 'package:catodo/features/presentation/views/overlays/form_overlay/focus_time_input_widget.dart';
+import 'package:catodo/features/presentation/views/focus_form/focus_activity_input_widget.dart';
+import 'package:catodo/features/presentation/views/focus_form/focus_time_input_widget.dart';
 import 'package:catodo/features/presentation/viewmodels/form_state.dart';
 
-class FormOverlay extends StatefulWidget {
-  const FormOverlay({super.key});
+class FocusForm extends StatefulWidget {
+  const FocusForm({super.key});
 
   @override
-  State<FormOverlay> createState() => _FormOverlayState();
+  State<FocusForm> createState() => _FocusFormState();
 }
 
-class _FormOverlayState extends State<FormOverlay>
+class _FocusFormState extends State<FocusForm>
     with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<Offset> _offsetAnimation;
@@ -84,9 +84,9 @@ class _FormOverlayState extends State<FormOverlay>
                       ),
                     ),
                     const FocusActivityInputWidget(),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     const FocusTimeInputWidget(),
-                    const SizedBox(height: 32),
+                    const SizedBox(height: 16),
                     FilledButton(
                       onPressed: () {
                         if (FormManager.instance.state.isFocused) {

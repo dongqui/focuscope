@@ -41,7 +41,9 @@ class DiscoveryDataSource {
   Future<void> addSessionIdToDiscovery(int sessionId) async {
     final discovery = await getOrCreateActiveDiscovery();
     if (!discovery.sessionIds.contains(sessionId)) {
-      discovery.sessionIds.add(sessionId);
+      final newSessionIds = List<int>.from(discovery.sessionIds)
+        ..add(sessionId);
+      discovery.sessionIds = newSessionIds;
       await _isar.writeTxn(() async {
         await _isar.discoverys.put(discovery);
       });

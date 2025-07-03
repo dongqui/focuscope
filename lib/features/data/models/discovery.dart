@@ -18,7 +18,7 @@ class Discovery {
 
   factory Discovery.fromJson(Map<String, dynamic> json) => Discovery(
         id: json['id'],
-        sessionIds: List<int>.from(json['sessionIds']),
+        sessionIds: List<int>.from(json['sessionIds'], growable: true),
         planetId: json['planetId'],
         isFinished: json['isFinished'],
       );

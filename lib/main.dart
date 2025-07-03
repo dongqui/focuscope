@@ -3,13 +3,13 @@ import 'package:flame/game.dart';
 import 'features/game/game_root.dart';
 import 'features/presentation/views/overlays/timer_overlay/timer_overlay.dart';
 import 'features/presentation/views/overlays/home_overlay.dart';
-import 'features/presentation/views/overlays/form_overlay/form_overlay.dart';
 import 'package:catodo/features/game/game_overlay_manager.dart';
 import 'package:catodo/core/init.dart';
 import 'features/presentation/views/overlays/focus_end_overlay.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'features/presentation/views/overlays/ready_overlay.dart';
+import 'features/presentation/views/overlays/focus_form_overlay.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -51,10 +51,11 @@ class MyApp extends StatelessWidget {
               overlayBuilderMap: {
                 GameOverlay.home.name: (context, game) => const HomeOverlay(),
                 GameOverlay.timer.name: (context, game) => const TimerOverlay(),
-                GameOverlay.form.name: (context, game) => const FormOverlay(),
                 GameOverlay.focusEnd.name: (context, game) =>
                     const FocusEndOverlay(),
                 GameOverlay.ready.name: (context, game) => const ReadyOverlay(),
+                GameOverlay.form.name: (context, game) =>
+                    const FocusFormOverlay(),
               },
               initialActiveOverlays: [GameOverlay.home.name],
             ),

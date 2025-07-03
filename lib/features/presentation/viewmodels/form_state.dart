@@ -4,14 +4,14 @@ import 'package:catodo/features/data/models/focus_session_model.dart';
 import 'package:catodo/constants/index.dart';
 import 'package:catodo/features/data/repositories/latest_activity_repository.dart';
 
-class FocusForm {
+class FocusFormState {
   final String activity;
   final int duration;
   final DateTime date;
   final List<String> latestActivities;
   final bool isFocused;
 
-  const FocusForm({
+  const FocusFormState({
     required this.activity,
     required this.duration,
     required this.date,
@@ -19,14 +19,14 @@ class FocusForm {
     this.isFocused = false,
   });
 
-  FocusForm copyWith({
+  FocusFormState copyWith({
     String? activity,
     int? duration,
     DateTime? date,
     List<String>? latestActivities,
     bool? isFocused,
   }) {
-    return FocusForm(
+    return FocusFormState(
       activity: activity ?? this.activity,
       duration: duration ?? this.duration,
       date: date ?? this.date,
@@ -40,11 +40,11 @@ class FormManager {
   static final FormManager _instance = FormManager._internal();
   static FormManager get instance => _instance;
 
-  FocusForm _state;
-  final List<void Function(FocusForm)> _listeners = [];
+  FocusFormState _state;
+  final List<void Function(FocusFormState)> _listeners = [];
 
   FormManager._internal()
-      : _state = FocusForm(
+      : _state = FocusFormState(
           activity: '',
           duration: DEFAULT_WORK_TIME,
           date: DateTime.now(),
@@ -52,7 +52,7 @@ class FormManager {
           isFocused: false,
         );
 
-  FocusForm get state => _state;
+  FocusFormState get state => _state;
 
   Future<List<LatestActivity>> getLatestActivities() async {
     final activities =
@@ -80,11 +80,11 @@ class FormManager {
     }
   }
 
-  void addListener(void Function(FocusForm) listener) {
+  void addListener(void Function(FocusFormState) listener) {
     _listeners.add(listener);
   }
 
-  void removeListener(void Function(FocusForm) listener) {
+  void removeListener(void Function(FocusFormState) listener) {
     _listeners.remove(listener);
   }
 
@@ -96,7 +96,7 @@ class FormManager {
     _updateState(_state.copyWith(duration: duration));
   }
 
-  void _updateState(FocusForm newState) {
+  void _updateState(FocusFormState newState) {
     _state = newState;
     for (var listener in _listeners) {
       listener(_state);
@@ -107,12 +107,13 @@ class FormManager {
     _updateState(_state.copyWith(isFocused: isFocused));
   }
 
-  void save(int focussedTime) {
-    FocusSessionRepository.instance.addFocusSession(FocusSession(
+  Future<int> save(int focussedTime) async {
+    final session = FocusSession(
       activity: _state.activity,
       focusedTime: focussedTime,
       restTime: 0,
       date: _state.date,
-    ));
+    );
+    return await FocusSessionRepository.instance.addFocusSession(session);
   }
 }

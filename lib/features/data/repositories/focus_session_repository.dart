@@ -26,8 +26,8 @@ class FocusSessionRepository {
   }
 
   // FocusSession 저장
-  Future<void> addFocusSession(FocusSession session) async {
-    await dataSource.addFocusSession(session);
+  Future<int> addFocusSession(FocusSession session) async {
+    return await dataSource.addFocusSession(session);
   }
 
   // FocusSession 불러오기

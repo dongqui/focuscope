@@ -1,21 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:catodo/features/presentation/viewmodels/discovery_state.dart';
-import 'dart:math';
-
 import 'package:catodo/widgets/progressbar.dart';
-
-class FocusItem {
-  final double progress; // 0.0 ~ 1.0
-  final String label;
-  final double hours;
-  final IconData icon;
-  FocusItem({
-    required this.progress,
-    required this.label,
-    required this.hours,
-    required this.icon,
-  });
-}
 
 class _ProgressMessage {
   final double threshold;
@@ -24,17 +8,26 @@ class _ProgressMessage {
 }
 
 class DiscoveryProgress extends StatefulWidget {
-  const DiscoveryProgress({super.key});
+  final double progress;
+  final double? addedProgress;
+  final String travelerImage;
+  final String planetImage;
+  const DiscoveryProgress({
+    super.key,
+    required this.progress,
+    this.addedProgress,
+    required this.travelerImage,
+    required this.planetImage,
+  });
 
   @override
   State<DiscoveryProgress> createState() => _DiscoveryProgressState();
 }
 
 class _DiscoveryProgressState extends State<DiscoveryProgress> {
-  final _discoveryManager = DiscoveryManager.instance;
-  late DiscoveryState _discoveryState;
+  late double _displayedProgress;
 
-  final List<_ProgressMessage> progressMessages = [
+  final List<_ProgressMessage> progressMessages = const [
     _ProgressMessage(0.0, "행성이 희미하게 감지됩니다..."),
     _ProgressMessage(0.2, "행성의 윤곽이 보이기 시작합니다."),
     _ProgressMessage(0.5, "행성이 점점 선명해집니다!"),
@@ -45,32 +38,22 @@ class _DiscoveryProgressState extends State<DiscoveryProgress> {
   @override
   void initState() {
     super.initState();
-    _discoveryState = _discoveryManager.state;
-    _discoveryManager.addListener(_onDiscoveryStateChanged);
-    _initDiscovery();
+    _displayedProgress = widget.progress + (widget.addedProgress ?? 0);
   }
 
   @override
-  void dispose() {
-    _discoveryManager.removeListener(_onDiscoveryStateChanged);
-    super.dispose();
-  }
-
-  void _onDiscoveryStateChanged(DiscoveryState state) {
-    setState(() {
-      _discoveryState = state;
-    });
-  }
-
-  Future<void> _initDiscovery() async {
-    await _discoveryManager.initializeCurrentDiscovery();
-  }
-
-  double get _progress {
-    // 세션의 focusedTime 총합을 10시간(36000초) 만점으로 0~1로 환산
-    final totalSeconds =
-        _discoveryState.sessions.fold<int>(0, (sum, s) => sum + s.focusedTime);
-    return (totalSeconds / 36000).clamp(0.0, 1.0);
+  void didUpdateWidget(covariant DiscoveryProgress oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.addedProgress != oldWidget.addedProgress &&
+        widget.addedProgress != 0) {
+      Future.delayed(const Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() {
+            _displayedProgress += widget.addedProgress ?? 0;
+          });
+        }
+      });
+    }
   }
 
   String getProgressMessage(double progress) {
@@ -84,102 +67,98 @@ class _DiscoveryProgressState extends State<DiscoveryProgress> {
 
   @override
   Widget build(BuildContext context) {
-    final double progress = 0.72;
     final double planetSize = 256;
-    // minAlpha 제거, bottomAlpha는 0.0~1.0로만 동작
-    final double bottomAlpha = (1.0 - max(0.1, progress)).clamp(0.0, 1.0);
-    final String progressMessage = getProgressMessage(progress);
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        SizedBox(
-          width: planetSize,
-          height: planetSize,
-          child: Stack(
-            children: [
-              // 행성 이미지 (아래)
-              Image.asset(
-                'assets/images/planet_1.png',
-                width: planetSize,
-                height: planetSize,
-                fit: BoxFit.cover,
-              ),
-              // 전체 그라데이션 덮개 (위->아래, 검정->반투명)
-              Container(
-                width: planetSize,
-                height: planetSize,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Colors.black,
-                      Color.fromRGBO(0, 0, 0, bottomAlpha),
-                    ],
-                    stops: const [0.0, 1.0],
-                  ),
-                ),
-              )
-            ],
-          ),
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+    return TweenAnimationBuilder<double>(
+      tween: Tween<double>(begin: widget.progress, end: _displayedProgress),
+      duration: const Duration(milliseconds: 800),
+      curve: Curves.easeInOut,
+      builder: (context, animatedProgress, child) {
+        final String progressMessage = getProgressMessage(animatedProgress);
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // 왼쪽: 여행자 이미지
-            Image.asset(
-              'assets/images/astronaut_idle.png',
-              width: 32,
-              height: 32,
+            const SizedBox(height: 36),
+            SizedBox(
+              width: planetSize,
+              height: planetSize,
+              child: Stack(
+                children: [
+                  // 행성 이미지 (아래)
+                  Image.asset(
+                    'assets/images/${widget.planetImage}',
+                    width: planetSize,
+                    height: planetSize,
+                    fit: BoxFit.cover,
+                  ),
+                  // progress에 따라 위에서 블랙으로 덮기
+                  Container(
+                    width: planetSize,
+                    height: planetSize,
+                    color: Colors.black.withOpacity(animatedProgress < 0.15
+                        ? 0.85
+                        : 1.0 - animatedProgress * 0.3),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(width: 16),
-            // 가운데: 프로그레스바와 텍스트
-            Column(
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(''),
-                CustomPaint(
-                  size: const Size(256, 20),
-                  painter: ProgressBarPainter(progress: progress),
+                // 왼쪽: 여행자 이미지
+                Image.asset(
+                  'assets/images/${widget.travelerImage}',
+                  width: 32,
+                  height: 32,
                 ),
-                Text(
-                  '${(progress * 100).toStringAsFixed(progress < 0.1 ? 2 : 1)}%',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                const SizedBox(width: 16),
+                // 가운데: 프로그레스바와 텍스트
+                Column(
+                  children: [
+                    const Text(''),
+                    CustomPaint(
+                      size: const Size(256, 20),
+                      painter: ProgressBarPainter(progress: animatedProgress),
+                    ),
+                    Text(
+                      '${(animatedProgress * 100).toStringAsFixed(animatedProgress < 0.1 ? 2 : 1)}%',
+                      style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 16),
+                // 오른쪽: 행성 이미지(작은 아이콘)
+                Image.asset(
+                  'assets/images/planet.png',
+                  width: 32,
+                  height: 32,
                 ),
               ],
             ),
-            const SizedBox(width: 16),
-            // 오른쪽: 행성 이미지
-            Image.asset(
-              'assets/images/planet.png',
-              width: 32,
-              height: 32,
+            const SizedBox(height: 4),
+            Text(
+              progressMessage,
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                shadows: [
+                  Shadow(
+                    blurRadius: 4,
+                    color: Colors.black.withOpacity(0.7),
+                    offset: const Offset(1, 1),
+                  ),
+                ],
+              ),
+              textAlign: TextAlign.center,
             ),
           ],
-        ),
-        const SizedBox(height: 16),
-        Text(
-          progressMessage,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            shadows: [
-              Shadow(
-                blurRadius: 4,
-                color: Colors.black.withOpacity(0.7),
-                offset: Offset(1, 1),
-              ),
-            ],
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ],
+        );
+      },
     );
   }
 }

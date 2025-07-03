@@ -10,9 +10,9 @@ class FocusSessionDataSource {
   FocusSessionDataSource(this._isar);
 
   // FocusSession 저장 함수
-  Future<void> addFocusSession(FocusSession session) async {
-    await _isar.writeTxn(() async {
-      await _isar.focusSessions.put(session);
+  Future<int> addFocusSession(FocusSession session) async {
+    return await _isar.writeTxn(() async {
+      return await _isar.focusSessions.put(session);
     });
   }
 
