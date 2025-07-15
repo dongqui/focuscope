@@ -19,22 +19,12 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Container(
-        color: Color(0xFF202735),
-        padding: EdgeInsets.symmetric(horizontal: 16),
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.of(context).size.height,
-        ),
-        child: Column(
-          children: [
-            const SizedBox(height: 60),
-            const FocusChartContainer(),
-            const SizedBox(height: 20),
-            const FocusSummaryContainer(),
-          ],
-        ),
-      ),
+    return Column(
+      children: [
+        const FocusChartContainer(),
+        const SizedBox(height: 20),
+        const FocusSummaryContainer(),
+      ],
     );
   }
 }
