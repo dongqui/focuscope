@@ -50,7 +50,7 @@ class _FocusEndOverlayState extends ProgressState<FocusEndOverlay> {
             progress: getProgress(),
             travelerImage:
                 CharacterManager.instance.state.selectedCharacter!.idleSprite,
-            planetImage: DiscoveryManager.instance.state.planet!.image,
+            planetImage: DiscoveryManager.instance.state.planet!.sprite,
           ),
         Positioned(
           bottom: 200,

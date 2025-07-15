@@ -31,4 +31,8 @@ class DiscoveryRepository {
   Future<void> finishDiscovery(int discoveryId) async {
     await dataSource.finishDiscovery(discoveryId);
   }
+
+  Future<List<Discovery>> getFinishedDiscoveries() async {
+    return await dataSource.getFinishedDiscoveries();
+  }
 }

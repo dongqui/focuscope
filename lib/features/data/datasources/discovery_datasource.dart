@@ -61,4 +61,9 @@ class DiscoveryDataSource {
       });
     }
   }
+
+  // isFinished가 true인 Discovery 리스트 반환
+  Future<List<Discovery>> getFinishedDiscoveries() async {
+    return await _isar.discoverys.filter().isFinishedEqualTo(true).findAll();
+  }
 }

@@ -10,6 +10,10 @@ class PlanetDataSource {
     return await isar.planets.filter().idEqualTo(id).findFirst();
   }
 
+  Future<List<Planet?>> getPlanetsByIds(List<int> ids) async {
+    return await isar.planets.getAll(ids);
+  }
+
   Future<void> addDefaultPlanetsIfEmpty() async {
     final count = await isar.planets.count();
     if (count == 0) {

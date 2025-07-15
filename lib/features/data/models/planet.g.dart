@@ -17,14 +17,19 @@ const PlanetSchema = CollectionSchema(
   name: r'Planet',
   id: 7337910740460741745,
   properties: {
-    r'image': PropertySchema(
+    r'frames': PropertySchema(
       id: 0,
-      name: r'image',
-      type: IsarType.string,
+      name: r'frames',
+      type: IsarType.longList,
     ),
     r'name': PropertySchema(
       id: 1,
       name: r'name',
+      type: IsarType.string,
+    ),
+    r'sprite': PropertySchema(
+      id: 2,
+      name: r'sprite',
       type: IsarType.string,
     )
   },
@@ -48,8 +53,9 @@ int _planetEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.image.length * 3;
+  bytesCount += 3 + object.frames.length * 8;
   bytesCount += 3 + object.name.length * 3;
+  bytesCount += 3 + object.sprite.length * 3;
   return bytesCount;
 }
 
@@ -59,8 +65,9 @@ void _planetSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.image);
+  writer.writeLongList(offsets[0], object.frames);
   writer.writeString(offsets[1], object.name);
+  writer.writeString(offsets[2], object.sprite);
 }
 
 Planet _planetDeserialize(
@@ -70,9 +77,10 @@ Planet _planetDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Planet(
+    frames: reader.readLongList(offsets[0]) ?? [],
     id: id,
-    image: reader.readString(offsets[0]),
     name: reader.readString(offsets[1]),
+    sprite: reader.readString(offsets[2]),
   );
   return object;
 }
@@ -85,8 +93,10 @@ P _planetDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readLongList(offset) ?? []) as P;
     case 1:
+      return (reader.readString(offset)) as P;
+    case 2:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -181,6 +191,143 @@ extension PlanetQueryWhere on QueryBuilder<Planet, Planet, QWhereClause> {
 }
 
 extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementEqualTo(
+      int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'frames',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'frames',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'frames',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'frames',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'frames',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'frames',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'frames',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'frames',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'frames',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'frames',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Planet, Planet, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -229,136 +376,6 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'image',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'image',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'image',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'image',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'image',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'image',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'image',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'image',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'image',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> imageIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'image',
-        value: '',
       ));
     });
   }
@@ -491,6 +508,136 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteEqualTo(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sprite',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteGreaterThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'sprite',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteLessThan(
+    String value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'sprite',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteBetween(
+    String lower,
+    String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'sprite',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'sprite',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'sprite',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'sprite',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'sprite',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'sprite',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'sprite',
+        value: '',
+      ));
+    });
+  }
 }
 
 extension PlanetQueryObject on QueryBuilder<Planet, Planet, QFilterCondition> {}
@@ -498,18 +645,6 @@ extension PlanetQueryObject on QueryBuilder<Planet, Planet, QFilterCondition> {}
 extension PlanetQueryLinks on QueryBuilder<Planet, Planet, QFilterCondition> {}
 
 extension PlanetQuerySortBy on QueryBuilder<Planet, Planet, QSortBy> {
-  QueryBuilder<Planet, Planet, QAfterSortBy> sortByImage() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'image', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterSortBy> sortByImageDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'image', Sort.desc);
-    });
-  }
-
   QueryBuilder<Planet, Planet, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -519,6 +654,18 @@ extension PlanetQuerySortBy on QueryBuilder<Planet, Planet, QSortBy> {
   QueryBuilder<Planet, Planet, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterSortBy> sortBySprite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sprite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterSortBy> sortBySpriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sprite', Sort.desc);
     });
   }
 }
@@ -536,18 +683,6 @@ extension PlanetQuerySortThenBy on QueryBuilder<Planet, Planet, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterSortBy> thenByImage() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'image', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterSortBy> thenByImageDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'image', Sort.desc);
-    });
-  }
-
   QueryBuilder<Planet, Planet, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -559,13 +694,24 @@ extension PlanetQuerySortThenBy on QueryBuilder<Planet, Planet, QSortThenBy> {
       return query.addSortBy(r'name', Sort.desc);
     });
   }
+
+  QueryBuilder<Planet, Planet, QAfterSortBy> thenBySprite() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sprite', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterSortBy> thenBySpriteDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'sprite', Sort.desc);
+    });
+  }
 }
 
 extension PlanetQueryWhereDistinct on QueryBuilder<Planet, Planet, QDistinct> {
-  QueryBuilder<Planet, Planet, QDistinct> distinctByImage(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Planet, Planet, QDistinct> distinctByFrames() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'image', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'frames');
     });
   }
 
@@ -573,6 +719,13 @@ extension PlanetQueryWhereDistinct on QueryBuilder<Planet, Planet, QDistinct> {
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QDistinct> distinctBySprite(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'sprite', caseSensitive: caseSensitive);
     });
   }
 }
@@ -584,15 +737,21 @@ extension PlanetQueryProperty on QueryBuilder<Planet, Planet, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Planet, String, QQueryOperations> imageProperty() {
+  QueryBuilder<Planet, List<int>, QQueryOperations> framesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'image');
+      return query.addPropertyName(r'frames');
     });
   }
 
   QueryBuilder<Planet, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
+    });
+  }
+
+  QueryBuilder<Planet, String, QQueryOperations> spriteProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'sprite');
     });
   }
 }

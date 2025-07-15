@@ -10,22 +10,26 @@ class DiscoveryState {
   final Discovery? currentDiscovery;
   final List<FocusSession> sessions;
   final Planet? planet;
+  final List<Planet> planets; // planets 리스트 추가
 
   DiscoveryState({
     required this.currentDiscovery,
     required this.sessions,
     required this.planet,
+    this.planets = const [], // 기본값 추가
   });
 
   DiscoveryState copyWith({
     Discovery? currentDiscovery,
     List<FocusSession>? sessions,
     Planet? planet,
+    List<Planet>? planets, // copyWith에 planets 추가
   }) {
     return DiscoveryState(
       currentDiscovery: currentDiscovery ?? this.currentDiscovery,
       sessions: sessions ?? this.sessions,
       planet: planet ?? this.planet,
+      planets: planets ?? this.planets, // planets 반영
     );
   }
 
@@ -38,12 +42,17 @@ class DiscoveryState {
                 .toList() ??
             [],
         planet: json['planet'] != null ? Planet.fromJson(json['planet']) : null,
+        planets: (json['planets'] as List<dynamic>?)
+                ?.map((e) => Planet.fromJson(e))
+                .toList() ??
+            [], // planets 역직렬화
       );
 
   Map<String, dynamic> toJson() => {
         'currentDiscovery': currentDiscovery?.toJson(),
         'sessions': sessions.map((e) => e.toJson()).toList(),
         'planet': planet?.toJson(),
+        'planets': planets.map((e) => e.toJson()).toList(), // planets 직렬화
       };
 }
 
@@ -58,6 +67,7 @@ class DiscoveryManager extends Observer<DiscoveryState> {
           currentDiscovery: null,
           sessions: [],
           planet: null,
+          planets: [], // planets 초기화
         );
 
   DiscoveryState get state => _state;
@@ -110,5 +120,23 @@ class DiscoveryManager extends Observer<DiscoveryState> {
     _updateState(_state.copyWith(
       sessions: [..._state.sessions, ...session],
     ));
+  }
+
+  // isFinished된 Discovery의 planet 리스트만 반환
+  Future<List<Planet>> fetchFinishedPlanets() async {
+    if (_state.planets.isNotEmpty) {
+      return _state.planets;
+    }
+
+    final discoveries =
+        await DiscoveryRepository.instance.getFinishedDiscoveries();
+
+    final planetIds = discoveries.map((e) => e.planetId).toList();
+    final planets = await PlanetRepository.instance.getPlanetsByIds(planetIds);
+
+    // null이 아닌 값만 반환
+    final nonNullPlanets = planets.whereType<Planet>().toList();
+    _updateState(_state.copyWith(planets: nonNullPlanets));
+    return nonNullPlanets;
   }
 }

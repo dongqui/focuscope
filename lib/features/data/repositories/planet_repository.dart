@@ -26,6 +26,10 @@ class PlanetRepository {
     return await dataSource.getPlanetById(id);
   }
 
+  Future<List<Planet?>> getPlanetsByIds(List<int> ids) async {
+    return await dataSource.getPlanetsByIds(ids);
+  }
+
   Future<void> addDefaultPlanetsIfEmpty() async {
     await dataSource.addDefaultPlanetsIfEmpty();
   }

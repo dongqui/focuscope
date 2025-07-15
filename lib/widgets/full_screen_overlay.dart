@@ -54,37 +54,39 @@ class _FullScreenOverlayState extends State<FullScreenOverlay>
 
   @override
   Widget build(BuildContext context) {
-    assert(
-      context.findAncestorWidgetOfExactType<Stack>() != null,
-      'FullScreenOverlay must be used inside a Stack.',
-    );
+    final hasStackAncestor =
+        context.findAncestorWidgetOfExactType<Stack>() != null;
 
-    return Positioned.fill(
+    Widget overlay = Positioned.fill(
       child: FadeTransition(
         opacity: _fadeAnimation,
         child: ScaleTransition(
           scale: _scaleAnimation,
           child: Container(
             color: widget.backgroundColor,
-            child: SafeArea(
-              child: Stack(
-                children: [
-                  Positioned.fill(child: widget.child(context, _handleClose)),
-                  Positioned(
-                    top: 8,
-                    left: 8,
-                    child: IconButton(
-                      icon:
-                          Icon(Icons.close, size: 28, color: Color(0xFFFFFFFF)),
-                      onPressed: _handleClose,
-                    ),
+            child: Stack(
+              children: [
+                Positioned.fill(child: widget.child(context, _handleClose)),
+                Positioned(
+                  top: 8,
+                  child: IconButton(
+                    icon: Icon(Icons.close, size: 28, color: Color(0xFFFFFFFF)),
+                    onPressed: _handleClose,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
       ),
     );
+
+    if (hasStackAncestor) {
+      return overlay;
+    } else {
+      return Stack(
+        children: [overlay],
+      );
+    }
   }
 }
