@@ -81,11 +81,37 @@ class _CharacterSettingOverlayState extends State<CharacterSettingOverlay>
     super.dispose();
   }
 
+  openCharacterSelectors() {
+    showDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          insetPadding: EdgeInsets.zero,
+          child: CharacterSelectors(
+            onClose: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return _characterIdleAnimation != null
         ? Stack(
             children: [
+              Positioned.fill(
+                child: GestureDetector(
+                  onTap: openCharacterSelectors,
+                  child: Container(
+                    color: Colors.transparent,
+                  ),
+                ),
+              ),
               Center(
                 child: SizedBox(
                   width: 128,
@@ -102,25 +128,9 @@ class _CharacterSettingOverlayState extends State<CharacterSettingOverlay>
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 8), // 아래 여백
                   child: RawMaterialButton(
-                    onPressed: () {
-                      showDialog(
-                        context: context,
-                        barrierDismissible: true,
-                        builder: (context) {
-                          return Dialog(
-                            backgroundColor: Colors.transparent,
-                            insetPadding: EdgeInsets.zero,
-                            child: CharacterSelectors(
-                              onClose: () {
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          );
-                        },
-                      );
-                    },
+                    onPressed: openCharacterSelectors,
                     elevation: 4.0,
-                    fillColor: Colors.grey[900],
+                    fillColor: Color(0xFF171F2A),
                     shape: const CircleBorder(),
                     constraints: const BoxConstraints.tightFor(
                       width: 40,
