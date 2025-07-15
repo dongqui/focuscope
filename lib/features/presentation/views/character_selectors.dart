@@ -36,7 +36,8 @@ class _CharacterSelectorsState extends State<CharacterSelectors> {
     super.dispose();
   }
 
-  void _handleCharacterStateChanged(CharacterState state) {
+  void _handleCharacterStateChanged(
+      CharacterState state, CharacterState? oldState) {
     setState(() {
       _characterState = state;
     });

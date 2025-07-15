@@ -39,13 +39,12 @@ class CharacterManager extends Observer<CharacterState> {
   CharacterState get state => _state;
 
   Future<void> getCharacterList() async {
-    final characters = state.characterList.isEmpty
-        ? await CharacterRepository.instance.getCharacters()
-        : state.characterList;
-
-    _updateState(_state.copyWith(
-      characterList: characters,
-    ));
+    if (_state.characterList.isEmpty) {
+      final characters = await CharacterRepository.instance.getCharacters();
+      _updateState(_state.copyWith(
+        characterList: characters,
+      ));
+    }
   }
 
   Future<void> initSelectedCharacter() async {

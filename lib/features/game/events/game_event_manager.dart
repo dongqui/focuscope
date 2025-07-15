@@ -26,7 +26,7 @@ class GameEventManager extends Component with HasGameReference {
     _worldManager.onChangeTimerState(status, game);
   }
 
-  void _handleCharacterChanged(CharacterState state) {
+  void _handleCharacterChanged(CharacterState state, CharacterState? oldState) {
     _worldManager.onChangeCharacter(state.selectedCharacter!, game);
   }
 

@@ -5,9 +5,6 @@ import 'package:catodo/features/data/repositories/discovery_repository.dart';
 import 'package:catodo/features/data/repositories/focus_session_repository.dart';
 import 'package:catodo/features/data/models/planet.dart';
 import 'package:catodo/features/data/repositories/planet_repository.dart';
-import 'package:catodo/features/data/datasources/planet_datasource.dart';
-import 'package:isar/isar.dart';
-import 'package:catodo/core/db.dart';
 
 class DiscoveryState {
   final Discovery? currentDiscovery;

@@ -10,7 +10,7 @@ class FocusChartPerDateUnit extends StatefulWidget {
 }
 
 class _FocusChartPerDateUnitState extends State<FocusChartPerDateUnit> {
-  final state = ChartManager.instance.state;
+  ChartState _state = ChartManager.instance.state;
 
   @override
   void initState() {
@@ -24,23 +24,25 @@ class _FocusChartPerDateUnitState extends State<FocusChartPerDateUnit> {
     super.dispose();
   }
 
-  handleChartStateChange(ChartState state) {
-    setState(() {});
+  handleChartStateChange(ChartState state, ChartState? oldState) {
+    setState(() {
+      _state = state;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    return BaseChart(dataList: state.focusSessions, labels: getLabels());
+    return BaseChart(dataList: _state.focusSessions, labels: getLabels());
   }
 
   List<String> getLabels() {
-    if (state.currentDateUnit == DateUnit.day) {
+    if (_state.currentDateUnit == DateUnit.day) {
       return List.generate(24, (index) => index.toString());
-    } else if (state.currentDateUnit == DateUnit.week) {
+    } else if (_state.currentDateUnit == DateUnit.week) {
       return ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
-    } else if (state.currentDateUnit == DateUnit.month) {
+    } else if (_state.currentDateUnit == DateUnit.month) {
       return List.generate(31, (index) => (index + 1).toString());
-    } else if (state.currentDateUnit == DateUnit.year) {
+    } else if (_state.currentDateUnit == DateUnit.year) {
       return [
         'JAN',
         'FEB',

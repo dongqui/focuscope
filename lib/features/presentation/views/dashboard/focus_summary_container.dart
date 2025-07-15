@@ -11,7 +11,7 @@ class FocusSummaryContainer extends StatefulWidget {
 class _FocusSummaryContainerState extends State<FocusSummaryContainer> {
   final state = ChartManager.instance.state;
 
-  void _handleChangeState(ChartState state) {
+  void _handleChangeState(ChartState state, ChartState? oldState) {
     setState(() {});
   }
 

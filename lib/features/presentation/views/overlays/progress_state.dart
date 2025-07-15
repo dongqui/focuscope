@@ -18,11 +18,13 @@ abstract class ProgressState<T extends StatefulWidget> extends State<T> {
     super.dispose();
   }
 
-  void _handleCharacterStateChanged(CharacterState state) {
+  void _handleCharacterStateChanged(
+      CharacterState state, CharacterState? oldState) {
     setState(() {});
   }
 
-  void _handleDiscoveryStateChanged(DiscoveryState state) {
+  void _handleDiscoveryStateChanged(
+      DiscoveryState state, DiscoveryState? oldState) {
     setState(() {});
   }
 

@@ -10,10 +10,12 @@ class FocusChartContainer extends StatefulWidget {
 }
 
 class _FocusChartContainerState extends State<FocusChartContainer> {
-  final state = ChartManager.instance.state;
+  ChartState _state = ChartManager.instance.state;
 
-  void _handleChangeState(ChartState state) {
-    setState(() {});
+  void _handleChangeState(ChartState state, ChartState? oldState) {
+    setState(() {
+      _state = state;
+    });
   }
 
   @override
@@ -42,7 +44,7 @@ class _FocusChartContainerState extends State<FocusChartContainer> {
               ),
               child: ToggleButtons(
                 isSelected:
-                    List.generate(4, (i) => state.currentDateUnit.index == i),
+                    List.generate(4, (i) => _state.currentDateUnit.index == i),
                 onPressed: (int index) {
                   ChartManager.instance.updateDateUnit(DateUnit.values[index]);
                 },
