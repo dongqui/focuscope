@@ -52,12 +52,20 @@ class _FocusEndOverlayState extends ProgressState<FocusEndOverlay> {
                 CharacterManager.instance.state.selectedCharacter!.idleSprite,
             planetImage: DiscoveryManager.instance.state.planet!.image,
           ),
-        Center(
+        Positioned(
+          bottom: 200,
+          left: 0,
+          right: 0,
           child: ElevatedButton(
             onPressed: () {
               TimerManager.instance.save();
             },
-            child: Text('계속 하기'),
+            style: ElevatedButton.styleFrom(
+              shape: const CircleBorder(),
+              padding: const EdgeInsets.all(24),
+              backgroundColor: Colors.white,
+            ),
+            child: const Text('계속', style: TextStyle(color: Colors.black)),
           ),
         ),
       ],
