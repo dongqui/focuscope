@@ -41,4 +41,5 @@ flutter:
     - assets/images/
     - assets/images/parallax/
     - assets/images/planets/
+    - assets/images/icons/
     - assets/sounds/
