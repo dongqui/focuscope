@@ -1,79 +1,26 @@
 {
   "project_info": {
-    "project_number": "327119920673",
-    "project_id": "catodo-ab458",
-    "storage_bucket": "catodo-ab458.firebasestorage.app"
+    "project_number": "1072398461040",
+    "project_id": "focuscope-dev",
+    "storage_bucket": "focuscope-dev.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:327119920673:android:5bc280abefdb26614d4d60",
+        "mobilesdk_app_id": "1:1072398461040:android:35c8276f32c0841b1becb5",
         "android_client_info": {
-          "package_name": "com.dongqui.catodo"
+          "package_name": "com.dongqui.focuscope"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "327119920673-bnbuj6d0t165pudq0vqeb9asbefo4a5j.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDATWX5J1iP-3eNPTMF9PsisjMxKNmPYjo"
+          "current_key": "AIzaSyBSZRXmWJIH7Kxf2glO4tI2rXf1AKsLq-o"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "327119920673-bnbuj6d0t165pudq0vqeb9asbefo4a5j.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "327119920673-aotj21p2alujfkqpmqsiucul5i0sb5q0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.catodo"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:327119920673:android:4ff8abee52a6578e4d4d60",
-        "android_client_info": {
-          "package_name": "com.example.catodo"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "327119920673-bnbuj6d0t165pudq0vqeb9asbefo4a5j.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDATWX5J1iP-3eNPTMF9PsisjMxKNmPYjo"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "327119920673-bnbuj6d0t165pudq0vqeb9asbefo4a5j.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
-              "client_id": "327119920673-aotj21p2alujfkqpmqsiucul5i0sb5q0.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.catodo"
-              }
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

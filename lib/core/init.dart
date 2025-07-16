@@ -3,6 +3,7 @@ import 'package:catodo/features/data/repositories/character_repository.dart';
 import 'package:catodo/features/data/repositories/selected_character_repository.dart';
 import 'package:catodo/features/data/models/character.dart';
 import 'package:catodo/features/data/repositories/planet_repository.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 Future<void> init() async {
   await DatabaseService.instance.setUpDB();
@@ -10,4 +11,6 @@ Future<void> init() async {
   await SelectedCharacterRepository.instance
       .initSelectedCharacter(defaultCharacters[0].name);
   await PlanetRepository.instance.addDefaultPlanetsIfEmpty();
+
+  await Firebase.initializeApp(); // Firebase 초기화
 }
