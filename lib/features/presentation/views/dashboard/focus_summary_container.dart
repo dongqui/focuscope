@@ -9,10 +9,12 @@ class FocusSummaryContainer extends StatefulWidget {
 }
 
 class _FocusSummaryContainerState extends State<FocusSummaryContainer> {
-  final state = ChartManager.instance.state;
+  ChartState _state = ChartManager.instance.state;
 
   void _handleChangeState(ChartState state, ChartState? oldState) {
-    setState(() {});
+    setState(() {
+      _state = state;
+    });
   }
 
   @override
@@ -29,52 +31,59 @@ class _FocusSummaryContainerState extends State<FocusSummaryContainer> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-            color: Color(0xFF171F2A),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          padding: EdgeInsets.all(36),
-          child: Center(
-            child: Text(
-              'Total Time\n${_calculateTotalTime()}',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFFFFFF),
+    return SizedBox(
+      height: 120, // 원하는 높이로 설정
+      child: Row(
+        children: [
+          Expanded(
+            child: Container(
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFF171F2A),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  'Total Time\n${_calculateTotalTime()}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Container(
-          padding: EdgeInsets.all(36),
-          decoration: BoxDecoration(
-            color: Color(0xFF171F2A),
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: Center(
-            child: Text(
-              'Sessions\n${_calculateSessionCount()}',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFFFFFFFF),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Container(
+              height: double.infinity,
+              decoration: BoxDecoration(
+                color: Color(0xFF171F2A),
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Center(
+                child: Text(
+                  'Sessions\n${_calculateSessionCount()}',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                    color: Color(0xFFFFFFFF),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   String _calculateTotalTime() {
     int totalSeconds = 0;
-    for (var session in state.focusSessions) {
+    for (var session in _state.focusSessions) {
       for (var (_, duration) in session) {
         totalSeconds += duration;
       }
@@ -92,6 +101,6 @@ class _FocusSummaryContainerState extends State<FocusSummaryContainer> {
   }
 
   String _calculateSessionCount() {
-    return state.focusSessions.length.toString();
+    return _state.focusSessions.length.toString();
   }
 }
