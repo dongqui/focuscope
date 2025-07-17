@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.dongqui.focuscope"
+    namespace = "com.example.catodo"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
