@@ -101,6 +101,10 @@ class _FocusSummaryContainerState extends State<FocusSummaryContainer> {
   }
 
   String _calculateSessionCount() {
-    return _state.focusSessions.length.toString();
+    int count = 0;
+    for (var session in _state.focusSessions) {
+      count += session.length;
+    }
+    return count.toString();
   }
 }
