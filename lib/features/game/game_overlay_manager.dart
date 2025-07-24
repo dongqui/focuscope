@@ -1,7 +1,7 @@
 import 'package:catodo/features/presentation/viewmodels/timer_state.dart';
 import 'package:flame/game.dart';
 
-enum GameOverlay { home, timer, form, focusEnd, audio, ready }
+enum GameOverlay { home, timer, form, focusEnd, audio, ready, login }
 
 class GameOverlayManager {
   static final GameOverlayManager _instance = GameOverlayManager._internal();

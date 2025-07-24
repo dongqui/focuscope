@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 // 간단한 로그인 화면 (구글 로그인만 예시)
 class LoginScreen extends StatefulWidget {
@@ -14,29 +15,24 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final GoogleSignIn signIn = GoogleSignIn.instance;
 
-  Future<void> _signInWithGoogle(BuildContext context) async {
-    try {
-      final signIn = GoogleSignIn.instance;
-      if (signIn.supportsAuthenticate()) {
-        await signIn.authenticate();
-        final user = signIn;
-        final idToken = await user.authorizationClient.;
-        final accessToken = await user.authorizationClient.accessToken;
+  Future<UserCredential?> _signInWithGoogle(BuildContext context) async {
+    await signIn.initialize(
+        serverClientId: dotenv.env['GOOGLE_CLIENT_ID'] ?? '');
 
-        // Firebase Auth 연동
-        if (idToken != null) {
-          final credential = GoogleAuthProvider.credential(
-            idToken: idToken,
-            accessToken: accessToken,
-          );
-          await FirebaseAuth.instance.signInWithCredential(credential);
-        }
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('구글 로그인 실패: $e')),
-      );
-    }
+    // Trigger the authentication flow
+
+    final GoogleSignInAccount googleUser =
+        await GoogleSignIn.instance.authenticate();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication googleAuth = googleUser.authentication;
+
+    // Create a new credential
+    final credential =
+        GoogleAuthProvider.credential(idToken: googleAuth.idToken);
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance.signInWithCredential(credential);
   }
 
   Future<void> _signInWithApple(BuildContext context) async {
@@ -62,6 +58,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      print('로그인된 유저: ${user.displayName}');
+    } else {
+      print('로그인된 유저가 없습니다.');
+    }
     return Scaffold(
       body: Center(
         child: Column(
