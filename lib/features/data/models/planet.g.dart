@@ -17,19 +17,19 @@ const PlanetSchema = CollectionSchema(
   name: r'Planet',
   id: 7337910740460741745,
   properties: {
-    r'frames': PropertySchema(
+    r'isPremium': PropertySchema(
       id: 0,
-      name: r'frames',
-      type: IsarType.longList,
+      name: r'isPremium',
+      type: IsarType.bool,
     ),
     r'name': PropertySchema(
       id: 1,
       name: r'name',
       type: IsarType.string,
     ),
-    r'sprite': PropertySchema(
+    r'url': PropertySchema(
       id: 2,
-      name: r'sprite',
+      name: r'url',
       type: IsarType.string,
     )
   },
@@ -53,9 +53,8 @@ int _planetEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.frames.length * 8;
   bytesCount += 3 + object.name.length * 3;
-  bytesCount += 3 + object.sprite.length * 3;
+  bytesCount += 3 + object.url.length * 3;
   return bytesCount;
 }
 
@@ -65,9 +64,9 @@ void _planetSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLongList(offsets[0], object.frames);
+  writer.writeBool(offsets[0], object.isPremium);
   writer.writeString(offsets[1], object.name);
-  writer.writeString(offsets[2], object.sprite);
+  writer.writeString(offsets[2], object.url);
 }
 
 Planet _planetDeserialize(
@@ -77,10 +76,10 @@ Planet _planetDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Planet(
-    frames: reader.readLongList(offsets[0]) ?? [],
     id: id,
+    isPremium: reader.readBool(offsets[0]),
     name: reader.readString(offsets[1]),
-    sprite: reader.readString(offsets[2]),
+    url: reader.readString(offsets[2]),
   );
   return object;
 }
@@ -93,7 +92,7 @@ P _planetDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongList(offset) ?? []) as P;
+      return (reader.readBool(offset)) as P;
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
@@ -191,143 +190,6 @@ extension PlanetQueryWhere on QueryBuilder<Planet, Planet, QWhereClause> {
 }
 
 extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementEqualTo(
-      int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'frames',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'frames',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'frames',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'frames',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'frames',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'frames',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'frames',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'frames',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'frames',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> framesLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'frames',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
-    });
-  }
-
   QueryBuilder<Planet, Planet, QAfterFilterCondition> idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -376,6 +238,16 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> isPremiumEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isPremium',
+        value: value,
       ));
     });
   }
@@ -509,20 +381,20 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteEqualTo(
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlEqualTo(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sprite',
+        property: r'url',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteGreaterThan(
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -530,14 +402,14 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'sprite',
+        property: r'url',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteLessThan(
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlLessThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
@@ -545,14 +417,14 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'sprite',
+        property: r'url',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteBetween(
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlBetween(
     String lower,
     String upper, {
     bool includeLower = true,
@@ -561,7 +433,7 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'sprite',
+        property: r'url',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -571,69 +443,67 @@ extension PlanetQueryFilter on QueryBuilder<Planet, Planet, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteStartsWith(
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlStartsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'sprite',
+        property: r'url',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteEndsWith(
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlEndsWith(
     String value, {
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'sprite',
+        property: r'url',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteContains(
-      String value,
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlContains(String value,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.contains(
-        property: r'sprite',
+        property: r'url',
         value: value,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteMatches(
-      String pattern,
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlMatches(String pattern,
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.matches(
-        property: r'sprite',
+        property: r'url',
         wildcard: pattern,
         caseSensitive: caseSensitive,
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteIsEmpty() {
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'sprite',
+        property: r'url',
         value: '',
       ));
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterFilterCondition> spriteIsNotEmpty() {
+  QueryBuilder<Planet, Planet, QAfterFilterCondition> urlIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'sprite',
+        property: r'url',
         value: '',
       ));
     });
@@ -645,6 +515,18 @@ extension PlanetQueryObject on QueryBuilder<Planet, Planet, QFilterCondition> {}
 extension PlanetQueryLinks on QueryBuilder<Planet, Planet, QFilterCondition> {}
 
 extension PlanetQuerySortBy on QueryBuilder<Planet, Planet, QSortBy> {
+  QueryBuilder<Planet, Planet, QAfterSortBy> sortByIsPremium() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterSortBy> sortByIsPremiumDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.desc);
+    });
+  }
+
   QueryBuilder<Planet, Planet, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -657,15 +539,15 @@ extension PlanetQuerySortBy on QueryBuilder<Planet, Planet, QSortBy> {
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterSortBy> sortBySprite() {
+  QueryBuilder<Planet, Planet, QAfterSortBy> sortByUrl() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sprite', Sort.asc);
+      return query.addSortBy(r'url', Sort.asc);
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterSortBy> sortBySpriteDesc() {
+  QueryBuilder<Planet, Planet, QAfterSortBy> sortByUrlDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sprite', Sort.desc);
+      return query.addSortBy(r'url', Sort.desc);
     });
   }
 }
@@ -683,6 +565,18 @@ extension PlanetQuerySortThenBy on QueryBuilder<Planet, Planet, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Planet, Planet, QAfterSortBy> thenByIsPremium() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Planet, Planet, QAfterSortBy> thenByIsPremiumDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.desc);
+    });
+  }
+
   QueryBuilder<Planet, Planet, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -695,23 +589,23 @@ extension PlanetQuerySortThenBy on QueryBuilder<Planet, Planet, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterSortBy> thenBySprite() {
+  QueryBuilder<Planet, Planet, QAfterSortBy> thenByUrl() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sprite', Sort.asc);
+      return query.addSortBy(r'url', Sort.asc);
     });
   }
 
-  QueryBuilder<Planet, Planet, QAfterSortBy> thenBySpriteDesc() {
+  QueryBuilder<Planet, Planet, QAfterSortBy> thenByUrlDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'sprite', Sort.desc);
+      return query.addSortBy(r'url', Sort.desc);
     });
   }
 }
 
 extension PlanetQueryWhereDistinct on QueryBuilder<Planet, Planet, QDistinct> {
-  QueryBuilder<Planet, Planet, QDistinct> distinctByFrames() {
+  QueryBuilder<Planet, Planet, QDistinct> distinctByIsPremium() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'frames');
+      return query.addDistinctBy(r'isPremium');
     });
   }
 
@@ -722,10 +616,10 @@ extension PlanetQueryWhereDistinct on QueryBuilder<Planet, Planet, QDistinct> {
     });
   }
 
-  QueryBuilder<Planet, Planet, QDistinct> distinctBySprite(
+  QueryBuilder<Planet, Planet, QDistinct> distinctByUrl(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'sprite', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'url', caseSensitive: caseSensitive);
     });
   }
 }
@@ -737,9 +631,9 @@ extension PlanetQueryProperty on QueryBuilder<Planet, Planet, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Planet, List<int>, QQueryOperations> framesProperty() {
+  QueryBuilder<Planet, bool, QQueryOperations> isPremiumProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'frames');
+      return query.addPropertyName(r'isPremium');
     });
   }
 
@@ -749,9 +643,9 @@ extension PlanetQueryProperty on QueryBuilder<Planet, Planet, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Planet, String, QQueryOperations> spriteProperty() {
+  QueryBuilder<Planet, String, QQueryOperations> urlProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'sprite');
+      return query.addPropertyName(r'url');
     });
   }
 }

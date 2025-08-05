@@ -6,17 +6,19 @@ final List<Character> defaultCharacters = [
   Character(
       id: 1,
       name: 'astronaut',
-      travelframes: [0, 1, 2, 3, 2, 1],
+      travelframes: [0],
       travelSprite: 'astronaut_travel.png',
       idleSprite: 'astronaut_idle.png',
-      idleFrames: [0]),
+      idleFrames: [0],
+      isPremium: false),
   Character(
       id: 2,
       name: 'dog_white',
       travelframes: [0, 1, 2, 3],
       travelSprite: 'dog_white_travel.png',
       idleSprite: 'dog_white_idle.png',
-      idleFrames: [0]),
+      idleFrames: [0],
+      isPremium: false),
 ];
 
 @Collection()
@@ -28,7 +30,7 @@ class Character {
   late String travelSprite;
   late String idleSprite;
   late List<int> idleFrames;
-
+  late bool isPremium;
   Character({
     required this.id,
     required this.name,
@@ -36,6 +38,7 @@ class Character {
     required this.travelSprite,
     required this.idleSprite,
     required this.idleFrames,
+    required this.isPremium,
   });
 
   factory Character.fromJson(Map<String, dynamic> json) => Character(
@@ -45,6 +48,7 @@ class Character {
         travelSprite: json['travelSprite'],
         idleSprite: json['idleSprite'],
         idleFrames: json['idleFrames'],
+        isPremium: json['isPremium'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -54,5 +58,6 @@ class Character {
         'travelSprite': travelSprite,
         'idleSprite': idleSprite,
         'idleFrames': idleFrames,
+        'isPremium': isPremium,
       };
 }

@@ -27,18 +27,23 @@ const CharacterSchema = CollectionSchema(
       name: r'idleSprite',
       type: IsarType.string,
     ),
-    r'name': PropertySchema(
+    r'isPremium': PropertySchema(
       id: 2,
+      name: r'isPremium',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 3,
       name: r'name',
       type: IsarType.string,
     ),
     r'travelSprite': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'travelSprite',
       type: IsarType.string,
     ),
     r'travelframes': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'travelframes',
       type: IsarType.longList,
     )
@@ -79,9 +84,10 @@ void _characterSerialize(
 ) {
   writer.writeLongList(offsets[0], object.idleFrames);
   writer.writeString(offsets[1], object.idleSprite);
-  writer.writeString(offsets[2], object.name);
-  writer.writeString(offsets[3], object.travelSprite);
-  writer.writeLongList(offsets[4], object.travelframes);
+  writer.writeBool(offsets[2], object.isPremium);
+  writer.writeString(offsets[3], object.name);
+  writer.writeString(offsets[4], object.travelSprite);
+  writer.writeLongList(offsets[5], object.travelframes);
 }
 
 Character _characterDeserialize(
@@ -94,9 +100,10 @@ Character _characterDeserialize(
     id: id,
     idleFrames: reader.readLongList(offsets[0]) ?? [],
     idleSprite: reader.readString(offsets[1]),
-    name: reader.readString(offsets[2]),
-    travelSprite: reader.readString(offsets[3]),
-    travelframes: reader.readLongList(offsets[4]) ?? [],
+    isPremium: reader.readBool(offsets[2]),
+    name: reader.readString(offsets[3]),
+    travelSprite: reader.readString(offsets[4]),
+    travelframes: reader.readLongList(offsets[5]) ?? [],
   );
   return object;
 }
@@ -113,10 +120,12 @@ P _characterDeserializeProp<P>(
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 3:
       return (reader.readString(offset)) as P;
     case 4:
+      return (reader.readString(offset)) as P;
+    case 5:
       return (reader.readLongList(offset) ?? []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -542,6 +551,16 @@ extension CharacterQueryFilter
       return query.addFilterCondition(FilterCondition.greaterThan(
         property: r'idleSprite',
         value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Character, Character, QAfterFilterCondition> isPremiumEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isPremium',
+        value: value,
       ));
     });
   }
@@ -976,6 +995,18 @@ extension CharacterQuerySortBy on QueryBuilder<Character, Character, QSortBy> {
     });
   }
 
+  QueryBuilder<Character, Character, QAfterSortBy> sortByIsPremium() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Character, Character, QAfterSortBy> sortByIsPremiumDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.desc);
+    });
+  }
+
   QueryBuilder<Character, Character, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1027,6 +1058,18 @@ extension CharacterQuerySortThenBy
     });
   }
 
+  QueryBuilder<Character, Character, QAfterSortBy> thenByIsPremium() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Character, Character, QAfterSortBy> thenByIsPremiumDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isPremium', Sort.desc);
+    });
+  }
+
   QueryBuilder<Character, Character, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -1064,6 +1107,12 @@ extension CharacterQueryWhereDistinct
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'idleSprite', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<Character, Character, QDistinct> distinctByIsPremium() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isPremium');
     });
   }
 
@@ -1105,6 +1154,12 @@ extension CharacterQueryProperty
   QueryBuilder<Character, String, QQueryOperations> idleSpriteProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'idleSprite');
+    });
+  }
+
+  QueryBuilder<Character, bool, QQueryOperations> isPremiumProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isPremium');
     });
   }
 
