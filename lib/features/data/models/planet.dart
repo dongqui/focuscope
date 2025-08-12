@@ -3,8 +3,12 @@ import 'package:isar/isar.dart';
 part 'planet.g.dart';
 
 final defaultPlanets = [
-  Planet(id: 1, name: '', url: 'planets/planet_1.png', isPremium: false),
-  Planet(id: 2, name: '', url: 'planets/planet_2.png', isPremium: false),
+  Planet(
+      id: 1, name: '', url: 'planets/premium/p_planet_1.png', isPremium: true),
+  Planet(
+      id: 2, name: '', url: 'planets/premium/p_planet_2.png', isPremium: true),
+  Planet(
+      id: 3, name: '', url: 'planets/premium/p_planet_3.png', isPremium: true),
 ];
 
 @Collection()

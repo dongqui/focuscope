@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:catodo/features/presentation/viewmodels/discovery_state.dart';
-import 'package:catodo/features/data/models/planet.dart';
 import 'package:flame/widgets.dart';
-import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:flame/flame.dart';
 import 'package:catodo/features/presentation/views/discoveries.dart';
+import 'package:catodo/features/data/models/planet.dart';
 
 class DiscoveriesSetting extends StatefulWidget {
   const DiscoveriesSetting({super.key});
@@ -15,8 +13,6 @@ class DiscoveriesSetting extends StatefulWidget {
 }
 
 class _DiscoveriesSettingState extends State<DiscoveriesSetting> {
-  List<SpriteAnimation> _planetAnimations = [];
-
   @override
   void initState() {
     super.initState();
@@ -33,29 +29,12 @@ class _DiscoveriesSettingState extends State<DiscoveriesSetting> {
   void _onDiscoveryStateChanged(
       DiscoveryState state, DiscoveryState? oldState) async {
     if (state.planets.length != oldState?.planets.length) {
-      await _loadPlanetAnimations(state.planets);
+      setState(() {});
     }
-    setState(() {});
   }
 
   Future<void> _loadPlanets() async {
     await DiscoveryManager.instance.fetchFinishedPlanets();
-    await _loadPlanetAnimations(DiscoveryManager.instance.state.planets);
-    // 상태 변경은 리스너에서 처리하므로 여기서는 setState 불필요
-  }
-
-  Future<void> _loadPlanetAnimations(List<Planet> planets) async {
-    _planetAnimations = await Future.wait(planets.take(4).map((planet) async {
-      final image = await Flame.images.load(planet.sprite);
-      final frames = planet.frames
-          .map((index) => Sprite(
-                image,
-                srcSize: Vector2(1024, 1024),
-                srcPosition: Vector2(index * 1024, 0),
-              ))
-          .toList();
-      return SpriteAnimation.spriteList(frames, stepTime: 0.2);
-    }));
   }
 
   showDiscoveries() {
@@ -83,19 +62,19 @@ class _DiscoveriesSettingState extends State<DiscoveriesSetting> {
             height: 128,
             child: Stack(
               children: [
-                ..._planetAnimations.asMap().entries.map((entry) {
+                ...DiscoveryManager.instance.state.planets
+                    .asMap()
+                    .entries
+                    .map((entry) {
                   final i = entry.key;
-                  final animation = entry.value;
+
                   return Positioned(
                     left: i * 50.0,
                     top: 0,
                     child: SizedBox(
                       width: 128,
                       height: 128,
-                      child: SpriteAnimationWidget(
-                        animation: animation,
-                        animationTicker: SpriteAnimationTicker(animation),
-                      ),
+                      child: Image.asset(entry.value.url),
                     ),
                   );
                 }),

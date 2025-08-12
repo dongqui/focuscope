@@ -3,6 +3,42 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+Future<void> signInWithAppleViaWeb() async {
+  final clientId = dotenv.env['APPLE_CLIENT_ID'] ?? '';
+  final redirectUri = dotenv.env['APPLE_REDIRECT_URI'] ?? ''; // 앱에서 설정한 딥링크
+  final state = 'random_generated_state';
+
+  final url = Uri.https('appleid.apple.com', '/auth/authorize', {
+    'response_type': 'code',
+    'response_mode': 'query',
+    'client_id': clientId,
+    'redirect_uri': redirectUri,
+    'scope': 'email name',
+    'state': state,
+  });
+
+  final result = await FlutterWebAuth2.authenticate(
+    url: url.toString(),
+    callbackUrlScheme: 'com.dongqui.focuscope',
+  );
+
+  final code = Uri.parse(result).queryParameters['code'];
+
+  // 서버로 code 전송
+  final response = await http.post(
+    Uri.parse('https://your-cloud-function-url/appleSignIn'),
+    body: json.encode({'code': code}),
+    headers: {'Content-Type': 'application/json'},
+  );
+
+  final token = json.decode(response.body)['firebaseToken'];
+
+  await FirebaseAuth.instance.signInWithCustomToken(token);
+}
 
 // 간단한 로그인 화면 (구글 로그인만 예시)
 class LoginScreen extends StatefulWidget {

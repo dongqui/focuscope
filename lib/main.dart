@@ -10,6 +10,7 @@ import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'features/presentation/views/overlays/ready_overlay.dart';
 import 'features/presentation/views/overlays/focus_form_overlay.dart';
+import 'features/presentation/views/login.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,7 @@ class MyApp extends StatelessWidget {
                 GameOverlay.ready.name: (context, game) => const ReadyOverlay(),
                 GameOverlay.form.name: (context, game) =>
                     const FocusFormOverlay(),
+                GameOverlay.login.name: (context, game) => const LoginScreen(),
               },
               initialActiveOverlays: [GameOverlay.home.name],
             ),

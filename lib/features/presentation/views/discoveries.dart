@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:catodo/features/presentation/viewmodels/discovery_state.dart';
 import 'package:catodo/features/data/models/planet.dart';
-import 'package:flame/widgets.dart';
-
-import 'package:flame/sprite.dart';
 
 class Discoveries extends StatefulWidget {
   const Discoveries({super.key});
@@ -18,7 +15,19 @@ class _DiscoveriesState extends State<Discoveries> {
     Planet(
       id: 1,
       name: '테스트 행성',
-      url: 'planets/spritetest.png',
+      url: 'assets/images/planets/premium/p_planet_1.gif',
+      isPremium: false,
+    ),
+    Planet(
+      id: 2,
+      name: '테스트 행성',
+      url: 'assets/images/planets/premium/p_planet_2.gif',
+      isPremium: false,
+    ),
+    Planet(
+      id: 3,
+      name: '테스트 행성',
+      url: 'assets/images/planets/premium/p_planet_3.gif',
       isPremium: false,
     ),
   ]; // 초기값 할당
@@ -63,53 +72,17 @@ class _DiscoveriesState extends State<Discoveries> {
         mainAxisSpacing: 16,
         childAspectRatio: 1,
       ),
-      itemCount: _planets.length + 3, // gif 추가로 +2
+      itemCount: _planets.length,
       itemBuilder: (context, index) {
-        if (index == 0) {
-          return PlanetAnimationCell(planet: _planets[index]);
-        } else if (index == 1) {
-          return GifCell(index: 0);
-        } else if (index == 2) {
-          return GifCell(index: 2);
-        } else {
-          return GifCell(index: 3);
-        }
+        return GifCell(imageUrl: _planets[index].url);
       },
     );
   }
 }
 
-class PlanetAnimationCell extends StatefulWidget {
-  final Planet planet;
-  const PlanetAnimationCell({required this.planet, super.key});
-
-  @override
-  State<PlanetAnimationCell> createState() => _PlanetAnimationCellState();
-}
-
-class _PlanetAnimationCellState extends State<PlanetAnimationCell> {
-  SpriteAnimation? _animation;
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (_animation != null) {
-      return SpriteAnimationWidget(
-        animation: _animation!,
-        animationTicker: SpriteAnimationTicker(_animation!),
-      );
-    }
-    return const Center(child: CircularProgressIndicator());
-  }
-}
-
 class GifCell extends StatefulWidget {
-  final int index;
-  const GifCell({super.key, required this.index});
+  final String imageUrl;
+  const GifCell({super.key, required this.imageUrl});
 
   @override
   State<GifCell> createState() => _GifCellState();
@@ -179,7 +152,7 @@ class _GifCellState extends State<GifCell> with TickerProviderStateMixin {
               child: Transform.rotate(
                 angle: _rotationAnimation.value,
                 child: Image.asset(
-                  'assets/images/giftest${widget.index}.gif',
+                  widget.imageUrl,
                   fit: BoxFit.cover,
                 ),
               ),
