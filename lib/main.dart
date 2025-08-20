@@ -1,28 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:flame/game.dart';
-import 'features/game/game_root.dart';
-import 'features/presentation/views/overlays/timer_overlay/timer_overlay.dart';
-import 'features/presentation/views/overlays/home_overlay.dart';
-import 'package:catodo/features/game/game_overlay_manager.dart';
-import 'package:catodo/core/init.dart';
-import 'features/presentation/views/overlays/focus_end_overlay.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'features/presentation/views/overlays/ready_overlay.dart';
-import 'features/presentation/views/overlays/focus_form_overlay.dart';
-// import 'features/presentation/views/login.dart';
+import 'package:catodo/core/init.dart';
+import 'features/presentation/views/splash_screen.dart';
+import 'features/presentation/views/main_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await WakelockPlus.enable();
   await WakelockPlus.toggle(enable: true);
-  await init();
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
-  final game = GameRoot();
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  bool _isInitialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeApp();
+  }
+
+  Future<void> _initializeApp() async {
+    try {
+      await init();
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+    } catch (e) {
+      // 에러 발생 시에도 초기화 완료로 처리
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,34 +58,11 @@ class MyApp extends StatelessWidget {
             seedColor: Color(0xFF3A86FF)), // 보라색에서 파란색으로 변경
         useMaterial3: true,
       ),
-      home: PopScope(
-        canPop: false,
-        onPopInvokedWithResult: (didPop, result) async {
-          if (didPop) {
-            return;
-          }
-          return;
-        },
-        child: Scaffold(
-          body: SafeArea(
-            top: false,
-            child: GameWidget(
-              game: game,
-              overlayBuilderMap: {
-                GameOverlay.home.name: (context, game) => const HomeOverlay(),
-                GameOverlay.timer.name: (context, game) => const TimerOverlay(),
-                GameOverlay.focusEnd.name: (context, game) =>
-                    const FocusEndOverlay(),
-                GameOverlay.ready.name: (context, game) => const ReadyOverlay(),
-                GameOverlay.form.name: (context, game) =>
-                    const FocusFormOverlay(),
-                // GameOverlay.login.name: (context, game) => const LoginScreen(),
-              },
-              initialActiveOverlays: [GameOverlay.home.name],
+      home: _isInitialized
+          ? MainScreen()
+          : SplashScreen(
+              child: MainScreen(),
             ),
-          ),
-        ),
-      ),
     );
   }
 }
