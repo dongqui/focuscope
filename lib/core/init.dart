@@ -3,7 +3,7 @@ import 'package:catodo/features/data/repositories/character_repository.dart';
 import 'package:catodo/features/data/repositories/selected_character_repository.dart';
 import 'package:catodo/features/data/models/character.dart';
 import 'package:catodo/features/data/repositories/planet_repository.dart';
-import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future<void> init() async {
@@ -14,5 +14,5 @@ Future<void> init() async {
   await PlanetRepository.instance.addDefaultPlanetsIfEmpty();
 
   await dotenv.load();
-  await Firebase.initializeApp(); // Firebase 초기화
+  // await Firebase.initializeApp(); // Firebase 초기화
 }
