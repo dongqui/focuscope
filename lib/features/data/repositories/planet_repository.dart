@@ -33,4 +33,9 @@ class PlanetRepository {
   Future<void> addDefaultPlanetsIfEmpty() async {
     await dataSource.addDefaultPlanetsIfEmpty();
   }
+
+  // 행성 업데이트 또는 추가
+  Future<void> updatePlanet(Planet planet) async {
+    await dataSource.updatePlanet(planet);
+  }
 }

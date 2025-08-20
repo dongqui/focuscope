@@ -38,4 +38,9 @@ class CharacterRepository {
   Future<void> initializeDefaultCharacters() async {
     await dataSource.insertDefaultCharacters();
   }
+
+  // 캐릭터 업데이트 또는 추가
+  Future<void> updateCharacter(Character character) async {
+    await dataSource.updateCharacter(character);
+  }
 }

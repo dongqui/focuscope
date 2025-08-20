@@ -8,7 +8,6 @@ class CharacterDataSource {
 
   // 기본 캐릭터 데이터
 
-
   // DB에 기본 캐릭터 데이터 삽입
   Future<void> insertDefaultCharacters() async {
     final characters = await _isar.characters.where().findAll();
@@ -30,5 +29,12 @@ class CharacterDataSource {
         .filter()
         .nameEqualTo(characterName)
         .findFirst();
+  }
+
+  // 캐릭터 업데이트 또는 추가
+  Future<void> updateCharacter(Character character) async {
+    await _isar.writeTxn(() async {
+      await _isar.characters.put(character);
+    });
   }
 }

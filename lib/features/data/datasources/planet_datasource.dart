@@ -22,4 +22,11 @@ class PlanetDataSource {
       });
     }
   }
+
+  // 행성 업데이트 또는 추가
+  Future<void> updatePlanet(Planet planet) async {
+    await isar.writeTxn(() async {
+      await isar.planets.put(planet);
+    });
+  }
 }
