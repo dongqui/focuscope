@@ -8,10 +8,12 @@
  */
 
 import { setGlobalOptions } from "firebase-functions";
-import { onRequest } from "firebase-functions/https";
-import axios from "axios";
-import jwt from "jsonwebtoken";
-import admin from "firebase-admin";
+import { onRequest } from "firebase-functions/v2/https";
+import * as logger from "firebase-functions/logger";
+import * as admin from "firebase-admin";
+
+// Initialize Firebase Admin
+admin.initializeApp();
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
@@ -28,46 +30,141 @@ import admin from "firebase-admin";
 // this will be the maximum concurrent request count.
 setGlobalOptions({ maxInstances: 10 });
 
-export const appleSignIn = onRequest(async (request, response) => {
-  const code = request.body.code;
-  if (!code) {
-    response.status(400).send("Missing code");
-  }
+// 데이터 타입 정의
+interface ResourceVersion {
+  id: string;
+  version: number;
+  version_major: number;
+  version_minor: number;
+  version_patch: number;
+  createdAt: admin.firestore.Timestamp | Date;
+}
 
-  // Create client_secret (JWT)
-  const token = jwt.sign({}, process.env.APPLE_PRIVATE_KEY || "", {
-    algorithm: "ES256",
-    expiresIn: "1h",
-    issuer: process.env.APPLE_TEAM_ID,
-    audience: "https://appleid.apple.com",
-    subject: process.env.APPLE_CLIENT_ID,
-    keyid: process.env.APPLE_KEY_ID,
-  });
+interface Resources {
+  id: string;
+  resourceType: string;
+  version: number;
+  addedAt: admin.firestore.Timestamp | Date;
+  description?: string;
+  name: string;
 
-  const params = new URLSearchParams({
-    grant_type: "authorization_code",
-    code,
-    client_id: process.env.APPLE_CLIENT_ID || "",
-    client_secret: token,
-  });
+  // Planet
+  url?: string;
 
-  try {
-    const res = await axios.post(
-      "https://appleid.apple.com/auth/token",
-      params.toString(),
-      {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+  // Character
+  travelframes?: number[];
+  travelSprite?: string;
+  idleSprite?: string;
+  idleFrames?: number[];
+  isPremium?: boolean;
+}
+
+// 리소스 버전 정보를 가져오는 함수
+export const getResourceVersion = onRequest(
+  { maxInstances: 10 },
+  async (request, response) => {
+    try {
+      const db = admin.firestore();
+      const query = db.collection("resourceVersions");
+
+      // 모든 리소스 타입의 최신 버전을 가져오기
+      const snapshot = await query
+        .orderBy("version_major", "desc")
+        .orderBy("version_minor", "desc")
+        .orderBy("version_patch", "desc")
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        response.status(404).json({
+          success: false,
+          error: "No resource versions found",
+          data: null,
+        });
+        return;
       }
-    );
 
-    const idToken = res.data.id_token;
-    const appleUser = jwt.decode(idToken);
-
-    const token = typeof appleUser?.sub === "string" ? appleUser.sub : "";
-    const firebaseToken = await admin.auth().createCustomToken(token);
-    response.send({ firebaseToken });
-  } catch (err: any) {
-    console.error(err.response?.data || err.message);
-    response.status(500).send("Apple login failed");
+      const doc = snapshot.docs[0];
+      const data = doc.data() as ResourceVersion;
+      response.json({
+        success: true,
+        data,
+      });
+    } catch (error) {
+      logger.error("Error getting resource version:", error);
+      response.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+        data: null,
+      });
+    }
   }
-});
+);
+
+// 요청받은 버전과 최신 버전 사이의 모든 리소스를 가져오는 함수
+export const getResourcesBetweenVersions = onRequest(
+  { maxInstances: 10 },
+  async (request, response) => {
+    try {
+      const currentDeviceVersion = request.query["version"] as string;
+
+      if (!currentDeviceVersion) {
+        response.status(400).json({
+          success: false,
+          error: "Current device version is required",
+          data: null,
+        });
+        return;
+      }
+
+      const db = admin.firestore();
+      // 현재 디바이스 버전과 최신 버전 사이의 모든 버전들을 가져오기
+      const deviceVersionQuery = db
+        .collection("resourceVersions")
+        .where("version", "==", currentDeviceVersion);
+
+      const deviceVersionSnapshot = await deviceVersionQuery.get();
+      const deviceVersion =
+        deviceVersionSnapshot.docs[0].data() as ResourceVersion;
+
+      const versionsBetweenQuery = db
+        .collection("resourceVersions")
+        .where("createdAt", ">", deviceVersion.createdAt)
+        .orderBy("createdAt", "desc");
+      const versionsBetweenSnapshot = await versionsBetweenQuery.get();
+
+      // 각 버전에 대해 해당하는 리소스들을 가져오기
+      const resources: Resources[] = [];
+
+      for (const versionDoc of versionsBetweenSnapshot.docs) {
+        const versionData = versionDoc.data() as ResourceVersion;
+
+        // 해당 버전의 리소스들을 가져오기
+        const resourcesQuery = db
+          .collection("resources")
+          .where("version", "==", versionData.version);
+
+        const resourcesSnapshot = await resourcesQuery.get();
+
+        resourcesSnapshot.docs.forEach((resourceDoc) => {
+          resources.push(resourceDoc.data() as Resources);
+        });
+      }
+
+      response.json({
+        success: true,
+        data: {
+          resources: resources,
+          version: versionsBetweenSnapshot.docs[0].data() as ResourceVersion,
+        },
+      });
+    } catch (error) {
+      logger.error("Error getting resources between versions:", error);
+      response.status(500).json({
+        success: false,
+        error: error instanceof Error ? error.message : "Unknown error",
+        data: null,
+      });
+    }
+  }
+);
