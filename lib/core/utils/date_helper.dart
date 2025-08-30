@@ -176,6 +176,76 @@ class DateHelper {
     ];
     return months[month - 1];
   }
+
+  /// Firestore 타임스탬프를 DateTime으로 변환
+  /// Firestore의 Timestamp 객체나 Map 형태의 타임스탬프를 처리
+  static DateTime? parseFirestoreTimestamp(dynamic timestamp) {
+    if (timestamp == null) return null;
+
+    // Firestore Timestamp 객체인 경우
+    if (timestamp is Map<String, dynamic>) {
+      if (timestamp.containsKey('_seconds')) {
+        final seconds = timestamp['_seconds'] as int;
+        final nanoseconds = timestamp['_nanoseconds'] as int? ?? 0;
+        return DateTime.fromMillisecondsSinceEpoch(
+          seconds * 1000 + (nanoseconds ~/ 1000000),
+        );
+      }
+    }
+
+    // ISO 문자열 형식인 경우
+    if (timestamp is String) {
+      try {
+        return DateTime.parse(timestamp);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // Unix 타임스탬프 (초 단위)인 경우
+    if (timestamp is int) {
+      return DateTime.fromMillisecondsSinceEpoch(timestamp * 1000);
+    }
+
+    // Unix 타임스탬프 (밀리초 단위)인 경우
+    if (timestamp is double) {
+      return DateTime.fromMillisecondsSinceEpoch(timestamp.toInt());
+    }
+
+    return null;
+  }
+
+  /// Firestore 타임스탬프를 DateTime으로 변환 (기본값 포함)
+  /// 변환에 실패하면 기본값을 반환
+  static DateTime parseFirestoreTimestampWithDefault(
+    dynamic timestamp, {
+    DateTime? defaultValue,
+  }) {
+    final parsed = parseFirestoreTimestamp(timestamp);
+    return parsed ?? defaultValue ?? DateTime.now();
+  }
+
+  /// DateTime을 Firestore 타임스탬프 Map으로 변환
+  static Map<String, dynamic> toFirestoreTimestamp(DateTime dateTime) {
+    final milliseconds = dateTime.millisecondsSinceEpoch;
+    final seconds = milliseconds ~/ 1000;
+    final nanoseconds = (milliseconds % 1000) * 1000000;
+
+    return {
+      '_seconds': seconds,
+      '_nanoseconds': nanoseconds,
+    };
+  }
+
+  /// DateTime을 Unix 타임스탬프 (초 단위)로 변환
+  static int toUnixTimestamp(DateTime dateTime) {
+    return dateTime.millisecondsSinceEpoch ~/ 1000;
+  }
+
+  /// DateTime을 Unix 타임스탬프 (밀리초 단위)로 변환
+  static int toUnixTimestampMillis(DateTime dateTime) {
+    return dateTime.millisecondsSinceEpoch;
+  }
 }
 
 class DateTimeRange {
