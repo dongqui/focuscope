@@ -34,15 +34,12 @@ setGlobalOptions({ maxInstances: 10 });
 interface ResourceVersion {
   id: string;
   version: number;
-  version_major: number;
-  version_minor: number;
-  version_patch: number;
   createdAt: admin.firestore.Timestamp | Date;
 }
 
 interface Resources {
   id: string;
-  resourceType: string;
+  resourceType: "planet" | "character";
   version: number;
   addedAt: admin.firestore.Timestamp | Date;
   description?: string;
@@ -68,12 +65,7 @@ export const getResourceVersion = onRequest(
       const query = db.collection("resourceVersions");
 
       // 모든 리소스 타입의 최신 버전을 가져오기
-      const snapshot = await query
-        .orderBy("version_major", "desc")
-        .orderBy("version_minor", "desc")
-        .orderBy("version_patch", "desc")
-        .limit(1)
-        .get();
+      const snapshot = await query.orderBy("version", "desc").limit(1).get();
 
       if (snapshot.empty) {
         response.status(404).json({
@@ -86,10 +78,7 @@ export const getResourceVersion = onRequest(
 
       const doc = snapshot.docs[0];
       const data = doc.data() as ResourceVersion;
-      response.json({
-        success: true,
-        data,
-      });
+      response.json(data);
     } catch (error) {
       logger.error("Error getting resource version:", error);
       response.status(500).json({
@@ -105,7 +94,9 @@ export const getResourceVersion = onRequest(
 export const getResourcesBetweenVersions = onRequest(
   { maxInstances: 10 },
   async (request, response) => {
+    console.log(request.query);
     try {
+      console.log(request.query);
       const currentDeviceVersion = request.query["version"] as string;
 
       if (!currentDeviceVersion) {
@@ -118,45 +109,40 @@ export const getResourcesBetweenVersions = onRequest(
       }
 
       const db = admin.firestore();
-      // 현재 디바이스 버전과 최신 버전 사이의 모든 버전들을 가져오기
-      const deviceVersionQuery = db
-        .collection("resourceVersions")
-        .where("version", "==", currentDeviceVersion);
-
-      const deviceVersionSnapshot = await deviceVersionQuery.get();
-      const deviceVersion =
-        deviceVersionSnapshot.docs[0].data() as ResourceVersion;
-
+      console.log(currentDeviceVersion, "?");
       const versionsBetweenQuery = db
         .collection("resourceVersions")
-        .where("createdAt", ">", deviceVersion.createdAt)
-        .orderBy("createdAt", "desc");
+        .where("version", ">", Number(currentDeviceVersion))
+        .orderBy("version", "desc")
+        .limit(100);
       const versionsBetweenSnapshot = await versionsBetweenQuery.get();
-
+      console.log(versionsBetweenSnapshot.docs);
       // 각 버전에 대해 해당하는 리소스들을 가져오기
       const resources: Resources[] = [];
 
-      for (const versionDoc of versionsBetweenSnapshot.docs) {
-        const versionData = versionDoc.data() as ResourceVersion;
+      await Promise.all(
+        versionsBetweenSnapshot.docs.map(async (versionDoc) => {
+          const versionData = versionDoc.data() as ResourceVersion;
 
-        // 해당 버전의 리소스들을 가져오기
-        const resourcesQuery = db
-          .collection("resources")
-          .where("version", "==", versionData.version);
+          // 해당 버전의 리소스들을 가져오기
+          const resourcesQuery = db
+            .collection("resources")
+            .where("version", "==", versionData.version);
 
-        const resourcesSnapshot = await resourcesQuery.get();
-
-        resourcesSnapshot.docs.forEach((resourceDoc) => {
-          resources.push(resourceDoc.data() as Resources);
-        });
-      }
-
+          const resourcesSnapshot = await resourcesQuery.get();
+          console.log(resourcesSnapshot.docs);
+          resources.push(
+            ...resourcesSnapshot.docs.map(
+              (resourceDoc) => resourceDoc.data() as Resources
+            )
+          );
+        })
+      );
+      console.log(resources);
+      console.log(versionsBetweenSnapshot.docs);
       response.json({
-        success: true,
-        data: {
-          resources: resources,
-          version: versionsBetweenSnapshot.docs[0].data() as ResourceVersion,
-        },
+        resources: resources,
+        version: versionsBetweenSnapshot.docs[0].data() as ResourceVersion,
       });
     } catch (error) {
       logger.error("Error getting resources between versions:", error);
