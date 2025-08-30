@@ -7,7 +7,6 @@ import 'package:catodo/features/presentation/views/overlays/home_overlay.dart';
 import 'package:catodo/features/presentation/views/overlays/focus_end_overlay.dart';
 import 'package:catodo/features/presentation/views/overlays/ready_overlay.dart';
 import 'package:catodo/features/presentation/views/overlays/focus_form_overlay.dart';
-import 'package:catodo/widgets/resource_update_overlay.dart';
 
 class MainScreen extends StatelessWidget {
   final game = GameRoot();
@@ -45,7 +44,6 @@ class MainScreen extends StatelessWidget {
                 },
                 initialActiveOverlays: [GameOverlay.home.name],
               ),
-              const ResourceUpdateOverlay(),
             ],
           ),
         ),

@@ -17,25 +17,15 @@ const ResourceVersionSchema = CollectionSchema(
   name: r'ResourceVersion',
   id: -8600458410099647020,
   properties: {
-    r'isDownloaded': PropertySchema(
+    r'checkedAt': PropertySchema(
       id: 0,
-      name: r'isDownloaded',
-      type: IsarType.bool,
-    ),
-    r'lastUpdated': PropertySchema(
-      id: 1,
-      name: r'lastUpdated',
+      name: r'checkedAt',
       type: IsarType.dateTime,
     ),
-    r'resourceType': PropertySchema(
-      id: 2,
-      name: r'resourceType',
-      type: IsarType.string,
-    ),
     r'version': PropertySchema(
-      id: 3,
+      id: 1,
       name: r'version',
-      type: IsarType.string,
+      type: IsarType.long,
     )
   },
   estimateSize: _resourceVersionEstimateSize,
@@ -58,8 +48,6 @@ int _resourceVersionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.resourceType.length * 3;
-  bytesCount += 3 + object.version.length * 3;
   return bytesCount;
 }
 
@@ -69,10 +57,8 @@ void _resourceVersionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeBool(offsets[0], object.isDownloaded);
-  writer.writeDateTime(offsets[1], object.lastUpdated);
-  writer.writeString(offsets[2], object.resourceType);
-  writer.writeString(offsets[3], object.version);
+  writer.writeDateTime(offsets[0], object.checkedAt);
+  writer.writeLong(offsets[1], object.version);
 }
 
 ResourceVersion _resourceVersionDeserialize(
@@ -82,10 +68,8 @@ ResourceVersion _resourceVersionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = ResourceVersion(
-    isDownloaded: reader.readBoolOrNull(offsets[0]) ?? false,
-    lastUpdated: reader.readDateTime(offsets[1]),
-    resourceType: reader.readString(offsets[2]),
-    version: reader.readString(offsets[3]),
+    checkedAt: reader.readDateTime(offsets[0]),
+    version: reader.readLong(offsets[1]),
   );
   object.id = id;
   return object;
@@ -99,13 +83,9 @@ P _resourceVersionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readBoolOrNull(offset) ?? false) as P;
-    case 1:
       return (reader.readDateTime(offset)) as P;
-    case 2:
-      return (reader.readString(offset)) as P;
-    case 3:
-      return (reader.readString(offset)) as P;
+    case 1:
+      return (reader.readLong(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
@@ -207,6 +187,62 @@ extension ResourceVersionQueryWhere
 extension ResourceVersionQueryFilter
     on QueryBuilder<ResourceVersion, ResourceVersion, QFilterCondition> {
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
+      checkedAtEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'checkedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
+      checkedAtGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'checkedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
+      checkedAtLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'checkedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
+      checkedAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'checkedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
       idEqualTo(Id value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -263,260 +299,49 @@ extension ResourceVersionQueryFilter
   }
 
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      isDownloadedEqualTo(bool value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isDownloaded',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      lastUpdatedEqualTo(DateTime value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastUpdated',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      lastUpdatedGreaterThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'lastUpdated',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      lastUpdatedLessThan(
-    DateTime value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'lastUpdated',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      lastUpdatedBetween(
-    DateTime lower,
-    DateTime upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'lastUpdated',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'resourceType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'resourceType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'resourceType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'resourceType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'resourceType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'resourceType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'resourceType',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'resourceType',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'resourceType',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      resourceTypeIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'resourceType',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+      versionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'version',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
       versionGreaterThan(
-    String value, {
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
         property: r'version',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
       versionLessThan(
-    String value, {
+    int value, {
     bool include = false,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
         property: r'version',
         value: value,
-        caseSensitive: caseSensitive,
       ));
     });
   }
 
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
       versionBetween(
-    String lower,
-    String upper, {
+    int lower,
+    int upper, {
     bool includeLower = true,
     bool includeUpper = true,
-    bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
@@ -525,77 +350,6 @@ extension ResourceVersionQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'version',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'version',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionContains(String value, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'version',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionMatches(String pattern, {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'version',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'version',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterFilterCondition>
-      versionIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'version',
-        value: '',
       ));
     });
   }
@@ -610,44 +364,16 @@ extension ResourceVersionQueryLinks
 extension ResourceVersionQuerySortBy
     on QueryBuilder<ResourceVersion, ResourceVersion, QSortBy> {
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      sortByIsDownloaded() {
+      sortByCheckedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isDownloaded', Sort.asc);
+      return query.addSortBy(r'checkedAt', Sort.asc);
     });
   }
 
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      sortByIsDownloadedDesc() {
+      sortByCheckedAtDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isDownloaded', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      sortByLastUpdated() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastUpdated', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      sortByLastUpdatedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastUpdated', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      sortByResourceType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'resourceType', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      sortByResourceTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'resourceType', Sort.desc);
+      return query.addSortBy(r'checkedAt', Sort.desc);
     });
   }
 
@@ -667,6 +393,20 @@ extension ResourceVersionQuerySortBy
 
 extension ResourceVersionQuerySortThenBy
     on QueryBuilder<ResourceVersion, ResourceVersion, QSortThenBy> {
+  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
+      thenByCheckedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'checkedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
+      thenByCheckedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'checkedAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -676,48 +416,6 @@ extension ResourceVersionQuerySortThenBy
   QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy> thenByIdDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      thenByIsDownloaded() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isDownloaded', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      thenByIsDownloadedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'isDownloaded', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      thenByLastUpdated() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastUpdated', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      thenByLastUpdatedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'lastUpdated', Sort.desc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      thenByResourceType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'resourceType', Sort.asc);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QAfterSortBy>
-      thenByResourceTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'resourceType', Sort.desc);
     });
   }
 
@@ -738,30 +436,16 @@ extension ResourceVersionQuerySortThenBy
 extension ResourceVersionQueryWhereDistinct
     on QueryBuilder<ResourceVersion, ResourceVersion, QDistinct> {
   QueryBuilder<ResourceVersion, ResourceVersion, QDistinct>
-      distinctByIsDownloaded() {
+      distinctByCheckedAt() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'isDownloaded');
+      return query.addDistinctBy(r'checkedAt');
     });
   }
 
   QueryBuilder<ResourceVersion, ResourceVersion, QDistinct>
-      distinctByLastUpdated() {
+      distinctByVersion() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'lastUpdated');
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QDistinct>
-      distinctByResourceType({bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'resourceType', caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<ResourceVersion, ResourceVersion, QDistinct> distinctByVersion(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'version', caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'version');
     });
   }
 }
@@ -774,27 +458,14 @@ extension ResourceVersionQueryProperty
     });
   }
 
-  QueryBuilder<ResourceVersion, bool, QQueryOperations> isDownloadedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'isDownloaded');
-    });
-  }
-
   QueryBuilder<ResourceVersion, DateTime, QQueryOperations>
-      lastUpdatedProperty() {
+      checkedAtProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'lastUpdated');
+      return query.addPropertyName(r'checkedAt');
     });
   }
 
-  QueryBuilder<ResourceVersion, String, QQueryOperations>
-      resourceTypeProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'resourceType');
-    });
-  }
-
-  QueryBuilder<ResourceVersion, String, QQueryOperations> versionProperty() {
+  QueryBuilder<ResourceVersion, int, QQueryOperations> versionProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'version');
     });

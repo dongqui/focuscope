@@ -2,35 +2,29 @@ import 'package:isar/isar.dart';
 
 part 'resource_version.g.dart';
 
+final defaultResourceVersion = ResourceVersion(
+  version: 1,
+  checkedAt: DateTime.now(),
+);
+
 @Collection()
 class ResourceVersion {
   Id id = Isar.autoIncrement;
 
-  late String resourceType; // 'character', 'planet'
-  late String version;
-  late DateTime lastUpdated;
-  late bool isDownloaded;
+  late int version;
+  late DateTime checkedAt;
 
   ResourceVersion({
-    required this.resourceType,
     required this.version,
-    required this.lastUpdated,
-    this.isDownloaded = false,
+    required this.checkedAt,
   });
 
   factory ResourceVersion.fromJson(Map<String, dynamic> json) =>
       ResourceVersion(
-        resourceType: json['resourceType'],
         version: json['version'],
-        lastUpdated: DateTime.parse(json['lastUpdated']),
-        isDownloaded: json['isDownloaded'] ?? false,
+        checkedAt: DateTime.parse(json['checkedAt']),
       );
 
-  Map<String, dynamic> toJson() => {
-        'id': id,
-        'resourceType': resourceType,
-        'version': version,
-        'lastUpdated': lastUpdated.toIso8601String(),
-        'isDownloaded': isDownloaded,
-      };
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'version': version, 'checkedAt': checkedAt.toIso8601String()};
 }

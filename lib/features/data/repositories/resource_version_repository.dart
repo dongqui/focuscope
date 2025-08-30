@@ -1,5 +1,7 @@
 import '../datasources/resource_version_datasource.dart';
 import '../models/resource_version.dart';
+import '../services/resource_update_service.dart';
+import 'package:catodo/features/data/models/resource.dart';
 
 class ResourceVersionRepository {
   final ResourceVersionDataSource dataSource;
@@ -24,29 +26,69 @@ class ResourceVersionRepository {
     _instance ??= ResourceVersionRepository._internal(dataSource);
   }
 
-  // 리소스 타입별 버전 정보 조회
-  Future<ResourceVersion?> getResourceVersion(String resourceType) async {
-    return await dataSource.getResourceVersion(resourceType);
-  }
-
-  // 모든 리소스 버전 정보 조회
-  Future<List<ResourceVersion>> getAllResourceVersions() async {
-    return await dataSource.getAllResourceVersions();
+  Future<void> addDefaultResourceVersionIfEmpty() async {
+    await dataSource.addDefaultResourceVersionIfEmpty();
   }
 
   // 리소스 버전 정보 저장 또는 업데이트
-  Future<void> saveResourceVersion(ResourceVersion version) async {
-    await dataSource.saveResourceVersion(version);
+  Future<void> saveResourceVersion(version, checkedAt) async {
+    await dataSource.saveResourceVersion(ResourceVersion(
+      version: version,
+      checkedAt: checkedAt,
+    ));
   }
 
-  // 리소스 버전 정보 삭제
-  Future<void> deleteResourceVersion(String resourceType) async {
-    await dataSource.deleteResourceVersion(resourceType);
+  /// 디바이스 DB에서 현재 리소스 버전을 가져옵니다
+  Future<ResourceVersion?> getCurrentResourceVersion() async {
+    return await dataSource.getCurrentResourceVersion();
   }
 
-  // 다운로드 상태 업데이트
-  Future<void> updateDownloadStatus(
-      String resourceType, bool isDownloaded) async {
-    await dataSource.updateDownloadStatus(resourceType, isDownloaded);
+  /// 서버에서 최신 리소스 버전을 가져옵니다
+  Future<int?> getServerResourceVersion() async {
+    try {
+      final res =
+          await ResourceUpdateService.instance.fetchServerResourceInfo();
+
+      return res?.version;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<VersionWithResources?> getResourcesBetweenVersions(
+      currentVersion) async {
+    final res = await ResourceUpdateService.instance
+        .fetchResourcesBetweenVersions(currentVersion);
+
+    return res;
+  }
+
+  Future<void> downloadResources(List<Resource> resources) async {
+    await Future.wait(resources.map((resource) async {
+      if (resource.resourceType == "planet") {
+        return downloadPlanetImage(resource.url, resource.name);
+      } else if (resource.resourceType == "character") {
+        return downloadCharacterImage(
+            resource.travelSprite, resource.idleSprite, resource.name);
+      }
+    }));
+  }
+
+  Future<void> downloadPlanetImage(String? url, String name) async {
+    if (url != null) {
+      await ResourceUpdateService.instance.downloadImage(url, 'planets/$name');
+    }
+  }
+
+  Future<void> downloadCharacterImage(
+      String? travelSprite, String? idleSprite, String name) async {
+    if (travelSprite != null && idleSprite != null) {
+      Future.wait([
+        ResourceUpdateService.instance
+            .downloadImage(travelSprite, 'characters/${name}_travel'),
+        ResourceUpdateService.instance
+            .downloadImage(idleSprite, 'characters/${name}_idle'),
+      ]);
+    }
   }
 }

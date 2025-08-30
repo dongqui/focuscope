@@ -1,23 +1,19 @@
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
-  final Widget child;
-
   const SplashScreen({
     super.key,
-    required this.child,
   });
 
   @override
-  _SplashScreenState createState() => _SplashScreenState();
+  SplashScreenState createState() => SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
+class SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<double> _scaleAnimation;
-  bool _showSplash = true;
 
   @override
   void initState() {
@@ -44,15 +40,6 @@ class _SplashScreenState extends State<SplashScreen>
     ));
 
     _animationController.forward();
-
-    // 2초 후에 스플래시 화면을 숨기고 실제 앱 화면을 보여줌
-    Future.delayed(const Duration(milliseconds: 2000), () {
-      if (mounted) {
-        setState(() {
-          _showSplash = false;
-        });
-      }
-    });
   }
 
   @override
@@ -63,10 +50,6 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    if (!_showSplash) {
-      return widget.child;
-    }
-
     return Scaffold(
       backgroundColor: Color(0xFF3A86FF),
       body: Center(
