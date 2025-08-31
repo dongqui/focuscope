@@ -116,7 +116,7 @@ export const getResourcesBetweenVersions = onRequest(
         .orderBy("version", "desc")
         .limit(100);
       const versionsBetweenSnapshot = await versionsBetweenQuery.get();
-      console.log(versionsBetweenSnapshot.docs);
+   
       // 각 버전에 대해 해당하는 리소스들을 가져오기
       const resources: Resources[] = [];
 
@@ -138,8 +138,6 @@ export const getResourcesBetweenVersions = onRequest(
           );
         })
       );
-      console.log(resources);
-      console.log(versionsBetweenSnapshot.docs);
       response.json({
         resources: resources,
         version: versionsBetweenSnapshot.docs[0].data() as ResourceVersion,
