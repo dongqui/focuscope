@@ -102,6 +102,11 @@ class _DiscoveriesSettingState extends State<DiscoveriesSetting> {
             ),
           ),
           const SizedBox(height: 16),
+          // Image.asset(
+          //   '/data/user/0/com.dongqui.focuscope/app_flutter/assets/images/planets/test.gif',
+          //   width: 32,
+          //   height: 32,
+          // ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -110,7 +115,7 @@ class _DiscoveriesSettingState extends State<DiscoveriesSetting> {
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Text('See more',
                   style: TextStyle(
                       fontSize: 18,

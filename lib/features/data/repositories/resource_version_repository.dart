@@ -76,7 +76,12 @@ class ResourceVersionRepository {
 
   Future<void> downloadPlanetImage(String? url, String name) async {
     if (url != null) {
-      await ResourceUpdateService.instance.downloadImage(url, 'planets/$name');
+      await ResourceUpdateService.instance.downloadImage(
+        imageUrl: url,
+        subPath: 'planets',
+        fileName: name,
+      );
+      name = name.replaceAll(' ', '_');
     }
   }
 
@@ -84,10 +89,16 @@ class ResourceVersionRepository {
       String? travelSprite, String? idleSprite, String name) async {
     if (travelSprite != null && idleSprite != null) {
       Future.wait([
-        ResourceUpdateService.instance
-            .downloadImage(travelSprite, 'characters/${name}_travel'),
-        ResourceUpdateService.instance
-            .downloadImage(idleSprite, 'characters/${name}_idle'),
+        ResourceUpdateService.instance.downloadImage(
+          imageUrl: travelSprite,
+          subPath: 'characters',
+          fileName: '${name}_travel',
+        ),
+        ResourceUpdateService.instance.downloadImage(
+          imageUrl: idleSprite,
+          subPath: 'characters',
+          fileName: '${name}_idle',
+        ),
       ]);
     }
   }

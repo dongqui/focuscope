@@ -1,3 +1,5 @@
+import 'package:catodo/core/utils/date_helper.dart';
+
 class Resource {
   final String id;
   final String resourceType;
@@ -33,17 +35,21 @@ class Resource {
 
   factory Resource.fromJson(Map<String, dynamic> json) {
     return Resource(
-      id: json['id'],
+      id: json['id'].toString(),
       resourceType: json['resourceType'],
       version: json['version'],
-      addedAt: json['addedAt'],
+      addedAt: DateHelper.parseFirestoreTimestamp(json['addedAt'])!,
       description: json['description'],
       name: json['name'],
       url: json['url'],
-      travelframes: json['travelframes'],
+      travelframes: json['travelframes'] != null
+          ? List<int>.from(json['travelframes'])
+          : null,
       travelSprite: json['travelSprite'],
       idleSprite: json['idleSprite'],
-      idleFrames: json['idleFrames'],
+      idleFrames: json['idleFrames'] != null
+          ? List<int>.from(json['idleFrames'])
+          : null,
       isPremium: json['isPremium'],
     );
   }
@@ -53,7 +59,7 @@ class Resource {
       'id': id,
       'resourceType': resourceType,
       'version': version,
-      'addedAt': addedAt,
+      'addedAt': DateHelper.toFirestoreTimestamp(addedAt),
       'description': description,
       'name': name,
       'url': url,

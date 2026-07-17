@@ -1,4 +1,5 @@
 import 'package:catodo/core/observer.dart';
+import 'package:catodo/core/utils/path_helper.dart';
 import 'package:catodo/features/data/models/character.dart';
 import 'package:catodo/features/data/models/planet.dart';
 import 'package:catodo/features/data/repositories/character_repository.dart';
@@ -82,27 +83,34 @@ class ResourceVersionManager extends Observer<ResourceVersionState> {
   }
 
   Future<void> updateResources() async {
-    print('updateResources');
     final resources = await ResourceVersionRepository.instance
         .getResourcesBetweenVersions(_state.version!);
-    print(resources);
+
     if (resources != null) {
       await ResourceVersionRepository.instance
           .downloadResources(resources.resources);
 
       await ResourceVersionRepository.instance.saveResourceVersion(
-        resources.version,
+        resources.version.version,
         DateTime.now(),
       );
 
-      await Future.wait(resources.resources.map((resource) {
+      await Future.wait(resources.resources.map((resource) async {
         if (resource.resourceType == "character") {
           return CharacterRepository.instance.updateCharacter(Character(
             id: int.parse(resource.id),
             name: resource.name,
             travelframes: resource.travelframes ?? [],
-            travelSprite: resource.travelSprite ?? '',
-            idleSprite: resource.idleSprite ?? '',
+            travelSprite: await PathHelper.getAssetsImagePath(
+              imageUrl: resource.travelSprite ?? '',
+              fileName: '${resource.name}_travel',
+              subPath: 'characters',
+            ),
+            idleSprite: await PathHelper.getAssetsImagePath(
+              imageUrl: resource.idleSprite ?? '',
+              fileName: '${resource.name}_idle',
+              subPath: 'characters',
+            ),
             idleFrames: resource.idleFrames ?? [],
             isPremium: resource.isPremium ?? false,
           ));
@@ -110,7 +118,11 @@ class ResourceVersionManager extends Observer<ResourceVersionState> {
           return PlanetRepository.instance.updatePlanet(Planet(
             id: int.parse(resource.id),
             name: resource.name,
-            url: resource.url ?? '',
+            url: await PathHelper.getAssetsImagePath(
+              imageUrl: resource.url ?? '',
+              fileName: resource.name,
+              subPath: 'planets',
+            ),
             isPremium: resource.isPremium ?? false,
           ));
         }

@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:catodo/core/init_db.dart';
@@ -31,10 +33,25 @@ class _MyAppState extends State<MyApp> {
     _initializeApp();
   }
 
+  Future<File> getLocalFile(String fileName) async {
+    final dir = await getApplicationDocumentsDirectory();
+    // /data/user/0/com.dongqui.focuscope/app_flutter
+
+    final file = File('${dir.path}/assets/images/planets/$fileName');
+    return file;
+  }
+
   Future<void> _initializeApp() async {
     await initDB();
     await initVersion();
     await versionCheck();
+
+    final file = await getLocalFile("test.gif");
+    if (await file.exists()) {
+      print("파일 있음: ${file.path}");
+    } else {
+      print("파일 없음");
+    }
 
     if (mounted) {
       setState(() {
