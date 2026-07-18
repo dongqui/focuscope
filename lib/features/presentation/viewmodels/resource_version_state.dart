@@ -76,9 +76,19 @@ class ResourceVersionManager extends Observer<ResourceVersionState> {
     // 서버에서 최신 버전 가져오기
     final serverVersion =
         await ResourceVersionRepository.instance.getServerResourceVersion();
+    final localVersion = _state.version;
 
-    final needsUpdate = serverVersion! > _state.version!;
+    // 서버/로컬 버전을 못 가져오면 업데이트 없이 진행 (오프라인·API 실패 대비)
+    if (serverVersion == null || localVersion == null) {
+      _updateState(_state.copyWith(status: ResourceVersionStatus.failed));
+      return false;
+    }
 
+    final needsUpdate = serverVersion > localVersion;
+    _updateState(_state.copyWith(
+      status: ResourceVersionStatus.done,
+      shouldUpdate: needsUpdate,
+    ));
     return needsUpdate;
   }
 

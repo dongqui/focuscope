@@ -42,21 +42,25 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initializeApp() async {
-    await initDB();
-    await initVersion();
-    await versionCheck();
+    try {
+      await initDB();
+      await initVersion();
+      await versionCheck();
 
-    final file = await getLocalFile("test.gif");
-    if (await file.exists()) {
-      print("파일 있음: ${file.path}");
-    } else {
-      print("파일 없음");
-    }
-
-    if (mounted) {
-      setState(() {
-        _isInitialized = true;
-      });
+      final file = await getLocalFile("test.gif");
+      if (await file.exists()) {
+        print("파일 있음: ${file.path}");
+      } else {
+        print("파일 없음");
+      }
+    } catch (e, st) {
+      print('앱 초기화 실패: $e\n$st');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+        });
+      }
     }
   }
 

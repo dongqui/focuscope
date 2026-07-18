@@ -1,23 +1,45 @@
-# catodo
+## 개발 배경
 
-우주 탐험 게임 레이어를 결합한 Flutter 집중(포커스) 타이머 앱. 집중 세션을 진행하면 우주선 여행자가
-우주를 날아다니며 캐릭터와 행성("discovery")을 해금한다. 모든 앱 데이터는 기기 내 Isar DB에 저장되는
-로컬 우선(local-first) 구조다.
+잠깐 배웠던 디지털 드로잉을 써먹어 보고 싶었다.
+
+## 기획 의도
+
+간단한 기능이라도 귀여움이 더해지면 사용 가치가 커질 것이다.
+무언가에 집중하면 새로운 행성을 발견하게 하여 동기 부여를 제공한다.
+
+## 기능
+
+### 케릭터 선택
+
+![케릭터 선택](docs/img/Screenshot_20260718_201255.jpg)
+
+### 통계
+
+![통계](docs/img/Screenshot_20260718_201250.jpg)
+![통계2](docs/img/Screenshot_20260718_201224.jpg)
+
+### 타이머
+
+![집중](docs/gif/Screen_Recording_20260718_195848.gif)
+
+### 행성 수집
+
+![행성](docs/gif/Screen_Recording_20260718_195959.gif)
 
 ## 기술 스택
 
-| 구분 | 사용 기술 |
-| --- | --- |
-| 프레임워크 | Flutter (Dart SDK ^3.6.0) |
-| 게임 엔진 | Flame, flame_tiled |
-| 로컬 DB | Isar (isar_generator / build_runner 코드 생성) |
-| 상태 관리 | 직접 구현한 싱글톤 매니저 + `Observer` 패턴 (외부 패키지 미사용) |
-| 네트워크 | http (Cloud Functions REST API) |
-| 백엔드 | Firebase Cloud Functions (TypeScript, Node 22) — `functions/` |
-| 오디오 | audioplayers, just_audio |
-| 차트 | fl_chart |
-| 국제화 | flutter_localizations, intl, ARB (`lib/l10n/`) |
-| 기타 | path_provider, wakelock_plus, flutter_dotenv, dartz, equatable |
+| 구분       | 사용 기술                                                        |
+| ---------- | ---------------------------------------------------------------- |
+| 프레임워크 | Flutter (Dart SDK ^3.6.0)                                        |
+| 게임 엔진  | Flame, flame_tiled                                               |
+| 로컬 DB    | Isar (isar_generator / build_runner 코드 생성)                   |
+| 상태 관리  | 직접 구현한 싱글톤 매니저 + `Observer` 패턴 (외부 패키지 미사용) |
+| 네트워크   | http (Cloud Functions REST API)                                  |
+| 백엔드     | Firebase Cloud Functions (TypeScript, Node 22) — `functions/`    |
+| 오디오     | audioplayers, just_audio                                         |
+| 차트       | fl_chart                                                         |
+| 국제화     | flutter_localizations, intl, ARB (`lib/l10n/`)                   |
+| 기타       | path_provider, wakelock_plus, flutter_dotenv, dartz, equatable   |
 
 > Firebase 클라이언트 SDK는 현재 비활성화(주석 처리)되어 있으며, 백엔드는 순수 HTTP Cloud Functions API를 사용한다.
 
