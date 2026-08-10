@@ -247,7 +247,7 @@ try/catch로 감싸 실패해도 앱이 뜨도록 한다.
 
 ## 5. 실행 순서
 
-### 0단계 — 앱인토스 호환성 스파이크 (선행 필수)
+### 0단계 — 앱인토스 호환성 스파이크 (선행 필수) — *부분 완료 (2026-08-10)*
 
 **기본 Flutter counter 앱을 웹 빌드해서 앱인토스 샌드박스에 올려본다.**
 
@@ -257,6 +257,50 @@ try/catch로 감싸 실패해도 앱이 뜨도록 한다.
 - 실패 시: 설계 전면 재검토. (React 기반 재작성 또는 앱인토스 출품 자체 재고)
 
 확인할 것: 번들 업로드 통과 여부, 샌드박스에서 렌더링 여부, CanvasKit 로딩 여부, 초기 로딩 시간.
+
+#### 진행 결과
+
+스파이크 프로젝트는 repo 밖 임시 디렉터리(`../toss_flutter_spike`)에 두고 커밋하지 않는다.
+`flutter create --platforms=web` 한 줄로 언제든 재현 가능하다.
+
+| 항목 | 결과 |
+|---|---|
+| `flutter build web --release` (Flutter 3.29.3) | 성공 (컴파일 23초) |
+| 산출물 크기 | 28MB — 앱인토스 **100MB 번들 제한 통과** |
+| 샌드박스 업로드·렌더링·초기 로딩 시간 | **미검증** — 토스 개발자 계정 필요 |
+
+#### 발견 — CanvasKit이 외부 CDN에서 로드된다 (업로드 전 필수 조치)
+
+기본 웹 빌드 산출물은 CanvasKit을 번들 내부가 아니라 Google CDN에서 받아온다:
+
+```
+flutter_bootstrap.js → https://www.gstatic.com/flutter-canvaskit
+main.dart.js         → https://www.gstatic.com/flutter-canvaskit/<engine-revision>/
+```
+
+앱인토스는 자체 서버 URL이 아니라 **번들을 업로드하는** 배포 방식이라, 웹뷰의 CSP나
+네트워크 정책이 이 외부 요청을 막으면 **흰 화면**이 된다. 번들 안에 이미 `canvaskit/`
+디렉터리가 포함되어 있으므로 로더가 그쪽을 보도록 고정해야 한다.
+
+`web/index.html`의 기본 `<script src="flutter_bootstrap.js" async>` 한 줄을 명시적
+로더 호출로 교체한다:
+
+```html
+<script src="flutter_bootstrap.js" async
+        {{flutter_service_worker_version}}></script>
+<script>
+  window.addEventListener('load', function () {
+    _flutter.loader.load({
+      config: { canvasKitBaseUrl: 'canvaskit/' },  // 번들 내부 경로로 고정
+    });
+  });
+</script>
+```
+
+`canvasKitBaseUrl`은 `<base href>` 기준 상대 경로여야 한다 — 앱인토스가 번들을 루트가
+아닌 하위 경로에 서빙할 경우 절대 경로(`/canvaskit/`)는 깨진다.
+
+이 조치는 5단계(앱인토스 통합)에서 본 앱에 적용한다.
 
 ### 1단계 — 웹 타겟 및 데드 코드 정리
 `flutter create --platforms=web .`, 데드 의존성 5개 제거, `main.dart` 디버그 코드 삭제,
@@ -285,7 +329,8 @@ isar 계열 의존성 제거.
 
 ## 6. 열린 항목
 
-- **앱인토스가 Flutter Web 번들을 수용하는가** — 0단계 스파이크로 확인. 최대 리스크.
+- **앱인토스가 Flutter Web 번들을 수용하는가** — 여전히 최대 리스크. 0단계에서 빌드
+  성공·크기 제한 통과까지 확인했고, **샌드박스 업로드/렌더링 검증만 남았다**(계정 필요).
 - **리소스 서버 CORS 설정** — 서버(Cloud Functions / Storage) 쪽 작업 필요.
 - **앱인토스 환경 감지 방법** — SDK가 제공하는 감지 수단을 5단계에서 확인.
 - **웹뷰에서 `just_audio` 동작** — 웹 지원은 되나 앱인토스 웹뷰에서 자동재생 정책·
