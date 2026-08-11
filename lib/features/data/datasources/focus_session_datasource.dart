@@ -1,24 +1,22 @@
-import 'package:isar/isar.dart';
+import 'package:catodo/core/storage/document_store.dart';
 import 'package:catodo/core/utils/date_helper.dart';
 import 'package:catodo/features/presentation/viewmodels/chart_state.dart';
 
 import '../models/focus_session_model.dart';
 
 class FocusSessionDataSource {
-  final Isar _isar;
+  final DocumentStore<FocusSession> _store;
 
-  FocusSessionDataSource(this._isar);
+  FocusSessionDataSource(this._store);
 
   // FocusSession 저장 함수
   Future<int> addFocusSession(FocusSession session) async {
-    return await _isar.writeTxn(() async {
-      return await _isar.focusSessions.put(session);
-    });
+    return await _store.add(session);
   }
 
   // FocusSession 불러오기 함수
   Future<List<FocusSession>> getFocusSessions() async {
-    return await _isar.focusSessions.where().sortByDate().findAll();
+    return _store.query(sort: (a, b) => a.date.compareTo(b.date));
   }
 
   // 액티비티와 집중 시간을 나타내는 튜플 타입
@@ -53,12 +51,12 @@ class FocusSessionDataSource {
         break;
     }
 
-    final sessions = await _isar.focusSessions
-        .filter()
-        .dateGreaterThan(startDate, include: true)
-        .dateLessThan(endDate, include: true)
-        .sortByDate()
-        .findAll();
+    // 양끝 경계를 포함한다 (기존 Isar 필터의 include: true와 동일)
+    final sessions = _store.query(
+      where: (session) =>
+          !session.date.isBefore(startDate) && !session.date.isAfter(endDate),
+      sort: (a, b) => a.date.compareTo(b.date),
+    );
 
     // 시간대별로 그룹화된 결과를 저장할 리스트
     List<List<ActivityTimeTuple>> result = List.generate(timeSlots, (_) => []);
@@ -100,6 +98,6 @@ class FocusSessionDataSource {
 
   // ID 리스트로 FocusSession 리스트 조회
   Future<List<FocusSession?>> getFocusSessionsByIds(List<int> ids) async {
-    return await _isar.focusSessions.getAll(ids);
+    return ids.map(_store.getById).toList();
   }
 }

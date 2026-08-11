@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:catodo/core/init_db.dart';
@@ -12,8 +10,13 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await WakelockPlus.enable();
-  await WakelockPlus.toggle(enable: true);
+  // 웹뷰 환경에서는 Screen Wake Lock API가 없을 수 있다.
+  // 실패해도 앱 실행은 계속되어야 하므로 삼켜준다.
+  try {
+    await WakelockPlus.enable();
+  } catch (e) {
+    debugPrint('Wakelock 활성화 실패 (무시): $e');
+  }
   runApp(const MyApp());
 }
 
@@ -33,28 +36,13 @@ class _MyAppState extends State<MyApp> {
     _initializeApp();
   }
 
-  Future<File> getLocalFile(String fileName) async {
-    final dir = await getApplicationDocumentsDirectory();
-    // /data/user/0/com.dongqui.focuscope/app_flutter
-
-    final file = File('${dir.path}/assets/images/planets/$fileName');
-    return file;
-  }
-
   Future<void> _initializeApp() async {
     try {
       await initDB();
       await initVersion();
       await versionCheck();
-
-      final file = await getLocalFile("test.gif");
-      if (await file.exists()) {
-        print("파일 있음: ${file.path}");
-      } else {
-        print("파일 없음");
-      }
     } catch (e, st) {
-      print('앱 초기화 실패: $e\n$st');
+      debugPrint('앱 초기화 실패: $e\n$st');
     } finally {
       if (mounted) {
         setState(() {

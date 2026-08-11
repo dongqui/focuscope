@@ -11,13 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dartz: ^0.10.1
-  equatable: ^2.0.7
-  flame_tiled: ^1.18.4
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
-  path_provider: ^2.1.5
-  audioplayers: ^6.4.0
   just_audio: ^0.10.0
   fl_chart: ^0.71.0
   wakelock_plus: ^1.3.2
@@ -33,16 +26,13 @@ dependencies:
   # google_sign_in: ^7.1.1
   # sign_in_with_apple: ^7.0.1
   flutter_dotenv: ^5.2.1
-  flutter_web_auth_2: ^4.1.0
   http: ^1.4.0
-  path: ^1.9.0
+  shared_preferences: ^2.3.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
-  isar_generator: ^3.1.0+1
-  build_runner: ^2.4.13
 
 flutter:
   generate: true

@@ -1,5 +1,4 @@
 import 'package:catodo/core/observer.dart';
-import 'package:catodo/core/utils/path_helper.dart';
 import 'package:catodo/features/data/models/character.dart';
 import 'package:catodo/features/data/models/planet.dart';
 import 'package:catodo/features/data/repositories/character_repository.dart';
@@ -97,30 +96,21 @@ class ResourceVersionManager extends Observer<ResourceVersionState> {
         .getResourcesBetweenVersions(_state.version!);
 
     if (resources != null) {
-      await ResourceVersionRepository.instance
-          .downloadResources(resources.resources);
-
       await ResourceVersionRepository.instance.saveResourceVersion(
         resources.version.version,
         DateTime.now(),
       );
 
-      await Future.wait(resources.resources.map((resource) async {
+      // 이미지를 내려받아 파일 경로를 저장하는 대신 서버 URL을 그대로 보관한다.
+      // 렌더링은 loadSprite가 URL을 보고 원격/번들을 알아서 갈라준다.
+      await Future.wait(resources.resources.map((resource) {
         if (resource.resourceType == "character") {
           return CharacterRepository.instance.updateCharacter(Character(
             id: int.parse(resource.id),
             name: resource.name,
             travelframes: resource.travelframes ?? [],
-            travelSprite: await PathHelper.getAssetsImagePath(
-              imageUrl: resource.travelSprite ?? '',
-              fileName: '${resource.name}_travel',
-              subPath: 'characters',
-            ),
-            idleSprite: await PathHelper.getAssetsImagePath(
-              imageUrl: resource.idleSprite ?? '',
-              fileName: '${resource.name}_idle',
-              subPath: 'characters',
-            ),
+            travelSprite: resource.travelSprite ?? '',
+            idleSprite: resource.idleSprite ?? '',
             idleFrames: resource.idleFrames ?? [],
             isPremium: resource.isPremium ?? false,
           ));
@@ -128,11 +118,7 @@ class ResourceVersionManager extends Observer<ResourceVersionState> {
           return PlanetRepository.instance.updatePlanet(Planet(
             id: int.parse(resource.id),
             name: resource.name,
-            url: await PathHelper.getAssetsImagePath(
-              imageUrl: resource.url ?? '',
-              fileName: resource.name,
-              subPath: 'planets',
-            ),
+            url: resource.url ?? '',
             isPremium: resource.isPremium ?? false,
           ));
         }

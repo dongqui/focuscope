@@ -1,24 +1,25 @@
-import 'package:isar/isar.dart';
+import 'package:catodo/core/storage/document_store.dart';
 import 'package:catodo/features/data/models/latest-activity-model.dart';
 
 class LatestActivityDataSource {
-  final Isar _isar;
+  final DocumentStore<LatestActivity> _store;
 
-  LatestActivityDataSource(this._isar);
+  LatestActivityDataSource(this._store);
 
   Future<void> addActivity(LatestActivity activity) async {
-    await _isar.writeTxn(() async {
-      await _isar.latestActivitys.put(activity);
-    });
+    final id = activity.id;
+    if (id == null) {
+      await _store.add(activity);
+    } else {
+      await _store.put(id, activity);
+    }
   }
 
   Future<void> removeLatestActivity(String activity) async {
-    await _isar.writeTxn(() async {
-      await _isar.latestActivitys.filter().nameEqualTo(activity).deleteAll();
-    });
+    await _store.deleteWhere((item) => item.name == activity);
   }
 
   Future<List<LatestActivity>> getLatestActivities() async {
-    return await _isar.latestActivitys.where().findAll();
+    return _store.query();
   }
 }

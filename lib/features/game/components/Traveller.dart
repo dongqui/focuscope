@@ -1,3 +1,4 @@
+import 'package:catodo/core/utils/sprite_loader.dart';
 import 'package:flame/components.dart';
 
 class Traveller extends SpriteAnimationComponent with HasGameReference {
@@ -11,7 +12,7 @@ class Traveller extends SpriteAnimationComponent with HasGameReference {
   }
 
   Future<void> setCharacter(String newImagePath, List<int> newFrames) async {
-    final spriteSheet = await game.images.load(newImagePath);
+    final spriteSheet = await loadSprite(newImagePath, cache: game.images);
     final animationFrames = newFrames
         .map((index) => Sprite(
               spriteSheet,

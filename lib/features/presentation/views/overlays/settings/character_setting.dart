@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
+import 'package:catodo/core/utils/sprite_loader.dart';
 import 'package:catodo/features/presentation/viewmodels/characater_state.dart';
 import 'package:flame/widgets.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:flame/flame.dart';
 import 'package:catodo/features/presentation/views/character_selectors.dart';
 
 class CharacterSettingOverlay extends StatefulWidget {
@@ -45,7 +45,7 @@ class _CharacterSettingOverlayState extends State<CharacterSettingOverlay>
 
   loadAnimation() async {
     final sprites =
-        await Flame.images.load(_characterState.selectedCharacter!.idleSprite);
+        await loadSprite(_characterState.selectedCharacter!.idleSprite);
     final frames = _characterState.selectedCharacter!.idleFrames
         .map((index) => Sprite(
               sprites,

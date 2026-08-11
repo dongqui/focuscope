@@ -106,9 +106,10 @@ class DiscoveryManager extends Observer<DiscoveryState> {
   }
 
   Future<void> finishCurrentDiscovery() async {
-    if (_state.currentDiscovery != null) {
-      await DiscoveryRepository.instance
-          .finishDiscovery(_state.currentDiscovery!.id);
+    // 저장된 Discovery는 항상 id를 갖지만, 저장 전 인스턴스가 들어올 여지를 막는다.
+    final discoveryId = _state.currentDiscovery?.id;
+    if (discoveryId != null) {
+      await DiscoveryRepository.instance.finishDiscovery(discoveryId);
     }
   }
 

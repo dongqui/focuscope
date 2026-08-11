@@ -1,39 +1,35 @@
-import 'package:isar/isar.dart';
+import 'package:catodo/core/storage/document_store.dart';
+
 import '../models/discovery.dart';
 import '../models/planet.dart';
 
 class DiscoveryDataSource {
-  final Isar _isar;
+  final DocumentStore<Discovery> _store;
+  final DocumentStore<Planet> _planetStore;
 
-  DiscoveryDataSource(this._isar);
+  DiscoveryDataSource(this._store, this._planetStore);
 
   // isFinished가 false인 Discovery를 불러오고, 없으면 새로 생성
   Future<Discovery> getOrCreateActiveDiscovery() async {
     // 1. isFinished == false인 Discovery 찾기
-    Discovery? discovery =
-        await _isar.discoverys.filter().isFinishedEqualTo(false).findFirst();
-    if (discovery != null) {
-      return discovery;
+    final active = _store.query(where: (d) => !d.isFinished);
+    if (active.isNotEmpty) {
+      return active.first;
     }
     // 2. planetId 후보군 구하기
-    final planets = await _isar.planets.where().findAll();
-    final usedPlanetIds = (await _isar.discoverys.where().findAll())
-        .map((d) => d.planetId)
-        .toSet();
-    int? newPlanetId = planets.map((p) => p.id).firstWhere(
+    final planets = _planetStore.query();
+    final usedPlanetIds = _store.query().map((d) => d.planetId).toSet();
+    int newPlanetId = planets.map((p) => p.id).firstWhere(
           (id) => !usedPlanetIds.contains(id),
           orElse: () => 1025,
         );
     // 3. 새 Discovery 생성
     final newDiscovery = Discovery(
-      id: Isar.autoIncrement,
       sessionIds: [],
       planetId: newPlanetId,
       isFinished: false,
     );
-    await _isar.writeTxn(() async {
-      await _isar.discoverys.put(newDiscovery);
-    });
+    await _store.add(newDiscovery);
     return newDiscovery;
   }
 
@@ -44,26 +40,21 @@ class DiscoveryDataSource {
       final newSessionIds = List<int>.from(discovery.sessionIds)
         ..add(sessionId);
       discovery.sessionIds = newSessionIds;
-      await _isar.writeTxn(() async {
-        await _isar.discoverys.put(discovery);
-      });
+      await _store.put(discovery.id!, discovery);
     }
   }
 
   // Discovery를 완료 처리 (isFinished = true)
   Future<void> finishDiscovery(int discoveryId) async {
-    final discovery =
-        await _isar.discoverys.filter().idEqualTo(discoveryId).findFirst();
+    final discovery = _store.getById(discoveryId);
     if (discovery != null && !discovery.isFinished) {
       discovery.isFinished = true;
-      await _isar.writeTxn(() async {
-        await _isar.discoverys.put(discovery);
-      });
+      await _store.put(discoveryId, discovery);
     }
   }
 
   // isFinished가 true인 Discovery 리스트 반환
   Future<List<Discovery>> getFinishedDiscoveries() async {
-    return await _isar.discoverys.filter().isFinishedEqualTo(true).findAll();
+    return _store.query(where: (d) => d.isFinished);
   }
 }

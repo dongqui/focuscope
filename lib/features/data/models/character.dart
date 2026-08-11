@@ -1,7 +1,3 @@
-import 'package:isar/isar.dart';
-
-part 'character.g.dart';
-
 final List<Character> defaultCharacters = [
   Character(
       id: 1,
@@ -21,16 +17,17 @@ final List<Character> defaultCharacters = [
       isPremium: false),
 ];
 
-@Collection()
 class Character {
-  @Index(unique: true)
-  Id id;
+  /// 앱이 직접 지정하는 id (기본 캐릭터 시드 + 서버 리소스 id). 자동 증가가 아니다.
+  int id;
+
   late String name;
   late List<int> travelframes;
   late String travelSprite;
   late String idleSprite;
   late List<int> idleFrames;
   late bool isPremium;
+
   Character({
     required this.id,
     required this.name,
@@ -42,13 +39,13 @@ class Character {
   });
 
   factory Character.fromJson(Map<String, dynamic> json) => Character(
-        id: json['id'],
-        name: json['name'],
-        travelframes: json['travelframes'],
-        travelSprite: json['travelSprite'],
-        idleSprite: json['idleSprite'],
-        idleFrames: json['idleFrames'],
-        isPremium: json['isPremium'],
+        id: json['id'] as int,
+        name: json['name'] as String,
+        travelframes: List<int>.from(json['travelframes'] as List),
+        travelSprite: json['travelSprite'] as String,
+        idleSprite: json['idleSprite'] as String,
+        idleFrames: List<int>.from(json['idleFrames'] as List),
+        isPremium: json['isPremium'] as bool,
       );
 
   Map<String, dynamic> toJson() => {

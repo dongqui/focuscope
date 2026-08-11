@@ -1,7 +1,6 @@
 import '../datasources/resource_version_datasource.dart';
 import '../models/resource_version.dart';
 import '../services/resource_update_service.dart';
-import 'package:catodo/features/data/models/resource.dart';
 
 class ResourceVersionRepository {
   final ResourceVersionDataSource dataSource;
@@ -63,43 +62,4 @@ class ResourceVersionRepository {
     return res;
   }
 
-  Future<void> downloadResources(List<Resource> resources) async {
-    await Future.wait(resources.map((resource) async {
-      if (resource.resourceType == "planet") {
-        return downloadPlanetImage(resource.url, resource.name);
-      } else if (resource.resourceType == "character") {
-        return downloadCharacterImage(
-            resource.travelSprite, resource.idleSprite, resource.name);
-      }
-    }));
-  }
-
-  Future<void> downloadPlanetImage(String? url, String name) async {
-    if (url != null) {
-      await ResourceUpdateService.instance.downloadImage(
-        imageUrl: url,
-        subPath: 'planets',
-        fileName: name,
-      );
-      name = name.replaceAll(' ', '_');
-    }
-  }
-
-  Future<void> downloadCharacterImage(
-      String? travelSprite, String? idleSprite, String name) async {
-    if (travelSprite != null && idleSprite != null) {
-      Future.wait([
-        ResourceUpdateService.instance.downloadImage(
-          imageUrl: travelSprite,
-          subPath: 'characters',
-          fileName: '${name}_travel',
-        ),
-        ResourceUpdateService.instance.downloadImage(
-          imageUrl: idleSprite,
-          subPath: 'characters',
-          fileName: '${name}_idle',
-        ),
-      ]);
-    }
-  }
 }

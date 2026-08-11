@@ -1,17 +1,15 @@
-import 'package:isar/isar.dart';
-
-part 'selected_character.g.dart';
-
-@Collection()
 class SelectedCharacter {
-  Id id = Isar.autoIncrement;
+  /// DocumentStore가 부여하는 자동 증가 id. 저장 전에는 null이다.
+  int? id;
+
   late String name;
 
-  SelectedCharacter({required this.name});
+  SelectedCharacter({this.id, required this.name});
 
   factory SelectedCharacter.fromJson(Map<String, dynamic> json) =>
       SelectedCharacter(
-        name: json['name'],
+        id: json['id'] as int?,
+        name: json['name'] as String,
       );
 
   Map<String, dynamic> toJson() => {

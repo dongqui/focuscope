@@ -1,9 +1,9 @@
+import 'package:catodo/core/utils/sprite_loader.dart';
 import 'package:catodo/features/presentation/viewmodels/characater_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flame/widgets.dart';
 import 'package:flame/components.dart';
 import 'package:flame/sprite.dart';
-import 'package:flame/flame.dart';
 
 class CharacterSelectors extends StatefulWidget {
   final VoidCallback onClose;
@@ -63,7 +63,7 @@ class _CharacterSelectorsState extends State<CharacterSelectors> {
 // 애니메이션 생성
     _characterTravelAnimations =
         await Future.wait(_characterState.characterList.map((character) async {
-      final sprites = await Flame.images.load(character.travelSprite);
+      final sprites = await loadSprite(character.travelSprite);
 
       final frames = character.travelframes
           .map((index) => Sprite(
@@ -79,7 +79,7 @@ class _CharacterSelectorsState extends State<CharacterSelectors> {
     }));
     _characterIdleAnimations =
         await Future.wait(_characterState.characterList.map((character) async {
-      final sprites = await Flame.images.load(character.idleSprite);
+      final sprites = await loadSprite(character.idleSprite);
       final frames = character.idleFrames
           .map((index) => Sprite(
                 sprites,

@@ -1,7 +1,3 @@
-import 'package:isar/isar.dart';
-
-part 'planet.g.dart';
-
 final defaultPlanets = [
   Planet(
       id: 1, name: '', url: 'planets/premium/p_planet_1.png', isPremium: true),
@@ -11,9 +7,9 @@ final defaultPlanets = [
       id: 3, name: '', url: 'planets/premium/p_planet_3.png', isPremium: true),
 ];
 
-@Collection()
 class Planet {
-  Id id;
+  /// 앱이 직접 지정하는 id (기본 행성 시드 + 서버 리소스 id). 자동 증가가 아니다.
+  int id;
 
   late String name;
   late String url;
@@ -27,10 +23,10 @@ class Planet {
   });
 
   factory Planet.fromJson(Map<String, dynamic> json) => Planet(
-        id: json['id'],
-        name: json['name'],
-        url: json['url'],
-        isPremium: json['isPremium'],
+        id: json['id'] as int,
+        name: json['name'] as String,
+        url: json['url'] as String,
+        isPremium: json['isPremium'] as bool,
       );
 
   Map<String, dynamic> toJson() => {

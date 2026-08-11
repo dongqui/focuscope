@@ -2,7 +2,7 @@
 
 - 작성일: 2026-08-08
 - 작업 브랜치: `refactor/web-build` (분기 지점 `78e35f4`)
-- 상태: 설계 승인 완료, 구현 미착수
+- 상태: **1~4단계 구현 완료 (2026-08-11)** — `flutter build web` 성공. 5단계(앱인토스 통합) 미착수
 
 ## 1. 목표와 범위
 
@@ -302,26 +302,58 @@ main.dart.js         → https://www.gstatic.com/flutter-canvaskit/<engine-revis
 
 이 조치는 5단계(앱인토스 통합)에서 본 앱에 적용한다.
 
-### 1단계 — 웹 타겟 및 데드 코드 정리
+### 1단계 — 웹 타겟 및 데드 코드 정리 — *완료*
 `flutter create --platforms=web .`, 데드 의존성 5개 제거, `main.dart` 디버그 코드 삭제,
 `wakelock_plus` try/catch 처리.
 
-### 2단계 — 저장소 계층 신규 구현
+### 2단계 — 저장소 계층 신규 구현 — *완료*
 `KeyValueStore` + `SharedPreferencesStore` + `DocumentStore` + 단위 테스트.
-(`TossStorageStore`는 4단계로 미룬다 — 그 전까지는 fallback으로 동작한다.)
+(`TossStorageStore`는 5단계로 미룬다 — 그 전까지는 fallback으로 동작한다.)
 
-### 3단계 — Isar 제거
+설계 §4.1의 5개 메서드로는 기존 datasource를 못 덮어 API를 넓혔다:
+`getById` / `deleteWhere` / `clear` / `addAll` / `count` 추가. 자동 증가 시퀀스는
+항목 목록과 별도 키(`<컬렉션>__seq`)에 보관한다 — 그래야 삭제된 id가 재사용되지 않는다.
+
+### 3단계 — Isar 제거 — *완료*
 Isar 모델 8개 변환, `.g.dart` 8개 삭제, datasource 8개 치환, `core/db.dart` 재작성,
 isar 계열 의존성 제거.
-이 시점에도 `path_helper.dart`·`resource_update_service.dart`에 `dart:io`가 남아 있으므로
-**아직 웹 빌드는 되지 않는다.**
 
-### 4단계 — 리소스 URL 전환 및 `dart:io` 완전 제거
+설계와 달랐던 점:
+
+- **`toJson`/`fromJson`은 8개 모델에 이미 전부 있었다.** 다만 지금까지 실제 저장 경로가
+  아니었던 탓에 버그가 숨어 있었고, JSON이 진짜 저장 포맷이 되면서 드러났다 —
+  `Character.travelframes`/`idleFrames`·`Audio.whiteNoise`의 `List<dynamic>` 캐스팅
+  런타임 에러, `LatestActivity.hasDeleted` 직렬화 누락, 모델 4개의 id 왕복 불일치.
+  라운드트립 테스트로 먼저 드러낸 뒤 고쳤다.
+- **id 타입을 전부 `int?`로 통일하지 않았다.** `Character`/`Planet`은 앱이 id를 직접
+  지정하고(시드 1,2,3 + 서버 리소스 id) `getPlanetById`로 조회하므로 `int` non-null을
+  유지했다. 자동 증가 모델 6개만 `int?`.
+- **`ResourceVersionDataSource.saveResourceVersion`이 단일 행 upsert로 바뀌었다.**
+  기존 Isar 구현은 `put`이 autoIncrement id로 매번 새 행을 만들고
+  `getCurrentResourceVersion`은 `versions.first`(가장 오래된 것)를 반환해, 로컬 버전이
+  영원히 갱신되지 않았다. 컬렉션이 의미상 단일 행이므로 교체 동작으로 고쳤다.
+
+### 4단계 — 리소스 URL 전환 및 `dart:io` 완전 제거 — *완료*
 `path_helper.dart` 삭제, `resource_update_service`의 `downloadImage`·`getImagePath` 삭제,
-`sprite_loader` 추가, `resource_version_repository` 수정, `path_provider`·`path` 의존성 제거.
-서버 CORS 설정 확인.
-**이 단계를 마치면 `dart:io` 참조가 0이 되어 `flutter build web`이 성공해야 한다 — 첫 번째
-실질 마일스톤이다.**
+`sprite_loader` 추가, `resource_version_repository`의 `download*` 3개 삭제,
+`path_provider`·`path` 의존성 제거.
+
+`Resource` 모델이 이미 서버 URL(`url`/`travelSprite`/`idleSprite`)을 들고 있어서,
+`resource_version_state.updateResources`가 `PathHelper`로 파일 경로를 만들던 자리에
+URL을 그대로 넣는 것으로 끝났다.
+
+`loadSprite`는 설계안보다 조금 넓다 — 테스트를 위해 fetcher/cache를 주입받고,
+원격 로드 실패 시 번들 에셋으로 fallback하는 `fallbackAsset` 인자를 받는다.
+
+#### 검증 결과 (2026-08-11)
+
+| 항목 | 결과 |
+|---|---|
+| `dart:io` / `path_provider` / `isar` 참조 | 0개 |
+| `flutter analyze` | error 0, warning 6 (전부 기존 뷰 파일의 미사용 import) |
+| `flutter test` | 63개 통과 |
+| `flutter build web --release` | **성공** (컴파일 27초) |
+| 산출물 크기 | 37MB — 앱인토스 100MB 제한 통과 |
 
 ### 5단계 — 앱인토스 통합
 `@apps-in-toss/web-framework` 로드, `TossStorageStore` js_interop 구현,
@@ -336,3 +368,9 @@ isar 계열 의존성 제거.
 - **웹뷰에서 `just_audio` 동작** — 웹 지원은 되나 앱인토스 웹뷰에서 자동재생 정책·
   사용자 제스처 요구사항이 어떻게 걸리는지 미확인.
 - **모바일 빌드 유지 여부** — 설계상 계속 컴파일되지만 후순위라 검증 시점은 미정.
+- **`updateResources` 후 메모리 상태가 갱신되지 않는다** — 저장소의 버전은 올라가지만
+  `ResourceVersionManager._state.version`은 그대로라 재시작 전까지 낡은 값이 남는다.
+  Isar 시절부터 있던 동작이라 이번 전환에서는 손대지 않았다.
+- **`DateHelper.getDayEnd`가 `23:59:59.000`을 반환한다** — 하루의 마지막 1초의 밀리초
+  구간(`23:59:59.001`~`.999`)에 기록된 세션이 차트 집계에서 빠진다. 역시 기존 동작이라
+  이번 범위 밖으로 두었다.

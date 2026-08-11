@@ -1,22 +1,20 @@
-import 'package:isar/isar.dart';
+import 'package:catodo/core/storage/document_store.dart';
+
 import '../models/selected_character.dart';
 
 class SelectedCharacterDataSource {
-  final Isar _isar;
+  final DocumentStore<SelectedCharacter> _store;
 
-  SelectedCharacterDataSource(this._isar);
+  SelectedCharacterDataSource(this._store);
 
   Future<void> setSelectedCharacter(String characterName) async {
-    await _isar.writeTxn(() async {
-      // 기존 선택 삭제
-      await _isar.selectedCharacters.clear();
-      // 새 선택 저장
-      await _isar.selectedCharacters
-          .put(SelectedCharacter(name: characterName));
-    });
+    // 기존 선택 삭제 후 새 선택 저장
+    await _store.clear();
+    await _store.add(SelectedCharacter(name: characterName));
   }
 
   Future<SelectedCharacter?> getSelectedCharacter() async {
-    return await _isar.selectedCharacters.where().findFirst();
+    final selected = _store.query();
+    return selected.isEmpty ? null : selected.first;
   }
 }
