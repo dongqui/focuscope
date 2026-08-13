@@ -2,7 +2,7 @@
 
 - 작성일: 2026-08-08
 - 작업 브랜치: `refactor/web-build` (분기 지점 `78e35f4`)
-- 상태: **1~4단계 구현 완료 (2026-08-11)** — `flutter build web` 성공. 5단계(앱인토스 통합) 미착수
+- 상태: **1~5단계 구현 완료 (2026-08-13)** — `.ait` 아티팩트 빌드까지 성공. 샌드박스 업로드 검증만 남음 (토스 계정 필요)
 
 ## 1. 목표와 범위
 
@@ -355,16 +355,49 @@ URL을 그대로 넣는 것으로 끝났다.
 | `flutter build web --release` | **성공** (컴파일 27초) |
 | 산출물 크기 | 37MB — 앱인토스 100MB 제한 통과 |
 
-### 5단계 — 앱인토스 통합
+### 5단계 — 앱인토스 통합 — *구현 완료 (2026-08-13)*
 `@apps-in-toss/web-framework` 로드, `TossStorageStore` js_interop 구현,
-`granite.config.ts` 작성, 환경 감지 로직, 샌드박스 최종 검증.
+배포 설정 작성, 환경 감지 로직. **샌드박스 최종 검증만 남음** (토스 계정 필요).
+
+구현 내용 및 설계와 달랐던 점:
+
+- **SDK 번들링**: `@apps-in-toss/web-framework@3.0.3`을 esbuild IIFE
+  (`--global-name=AppsInTossModule`, 78KB)로 번들해 `web/js/apps_in_toss.js`에 두고
+  `web/index.html`에서 Flutter보다 먼저 동기 로드한다. 진입점은 `toss/apps_in_toss_entry.js`,
+  빌드는 `npm run build:sdk`. 번들 산출물은 커밋한다 (npm 없이도 flutter build가 되도록).
+- **Storage API 확정**: `Storage.getItem/setItem/removeItem/clearItems` — 전부 Promise 반환,
+  문자열 전용. `TossStorageStore`(`lib/core/storage/toss_storage_store_web.dart`)가
+  `dart:js_interop` extension type으로 래핑. stub/web 조건부 export는 설계대로.
+- **환경 감지 확정**: SDK 소스가 `window.ReactNativeWebView` 존재로 토스 웹뷰를 판별한다.
+  `TossStorageStore.isAvailable`은 `ReactNativeWebView != null && AppsInTossModule.Storage != null`.
+  선택 로직은 `lib/core/storage/store_selector.dart`의 `createDefaultKeyValueStore()` —
+  감지 실패·초기화 실패 시 `SharedPreferencesStore` fallback. 테스트 4개 추가.
+- **설정 파일명이 `granite.config.ts`가 아니다** — v3 CLI(`ait`)는 c12로
+  `apps-in-toss.config.ts`를 읽는다 (`ait init`이 생성하는 이름도 동일). 문서의
+  `outdir`도 현행 스키마에서는 `webBundleDir`이며 `build/web`으로 지정했다.
+- **canvasKit 고정은 index.html이 아니라 `web/flutter_bootstrap.js` 커스텀 템플릿으로** —
+  Flutter 3.29의 기본 bootstrap이 이미 `load()`를 자동 호출하므로 index.html에서 또
+  호출하면 이중 초기화가 된다. 커스텀 템플릿에 `canvasKitBaseUrl: 'canvaskit/'`를 넣었고,
+  빌드 산출물에서 반영 확인.
+- **배포 파이프라인**: `npm run build` = SDK 번들 → `flutter build web --release` →
+  `ait build`(`catodo.ait` 생성, 16.7MB). 배포는 `npm run deploy`(= `ait deploy`, API 키 필요).
+
+#### 검증 결과 (2026-08-13)
+
+| 항목 | 결과 |
+|---|---|
+| `flutter analyze` | 신규 이슈 0 (기존 22개 그대로) |
+| `flutter test` | 전체 통과 (store_selector 4개 신규 포함) |
+| `flutter build web --release` | 성공, 37MB |
+| `npx ait build` | **성공** — `catodo.ait` 16.7MB 생성 |
+| 샌드박스 업로드/렌더링 | 미검증 — 토스 개발자 계정 필요, `appName: 'catodo'`가 콘솔 등록명과 일치해야 함 |
 
 ## 6. 열린 항목
 
 - **앱인토스가 Flutter Web 번들을 수용하는가** — 여전히 최대 리스크. 0단계에서 빌드
   성공·크기 제한 통과까지 확인했고, **샌드박스 업로드/렌더링 검증만 남았다**(계정 필요).
 - **리소스 서버 CORS 설정** — 서버(Cloud Functions / Storage) 쪽 작업 필요.
-- **앱인토스 환경 감지 방법** — SDK가 제공하는 감지 수단을 5단계에서 확인.
+- ~~앱인토스 환경 감지 방법~~ — 해소 (5단계): `window.ReactNativeWebView` 존재로 판별.
 - **웹뷰에서 `just_audio` 동작** — 웹 지원은 되나 앱인토스 웹뷰에서 자동재생 정책·
   사용자 제스처 요구사항이 어떻게 걸리는지 미확인.
 - **모바일 빌드 유지 여부** — 설계상 계속 컴파일되지만 후순위라 검증 시점은 미정.

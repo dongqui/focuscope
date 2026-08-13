@@ -38,6 +38,10 @@ migrate_working_dir/
 .pub/
 /build/
 
+# Node (앱인토스 SDK 번들링 도구)
+/node_modules/
+*.ait
+
 # Symbolication related
 app.*.symbols
 

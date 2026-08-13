@@ -1,0 +1,16 @@
+{
+  "name": "catodo-toss-miniapp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "catodo 앱인토스 미니앱 배포 도구 — Flutter Web 빌드를 앱인토스 번들로 포장한다",
+  "scripts": {
+    "build:sdk": "esbuild toss/apps_in_toss_entry.js --bundle --format=iife --global-name=AppsInTossModule --minify --outfile=web/js/apps_in_toss.js",
+    "build:web": "flutter build web --release",
+    "build": "npm run build:sdk && npm run build:web && ait build",
+    "deploy": "ait deploy"
+  },
+  "devDependencies": {
+    "@apps-in-toss/web-framework": "^3.0.3",
+    "esbuild": "^0.28.2"
+  }
+}

@@ -1,6 +1,6 @@
 import 'package:catodo/core/storage/document_store.dart';
 import 'package:catodo/core/storage/key_value_store.dart';
-import 'package:catodo/core/storage/shared_preferences_store.dart';
+import 'package:catodo/core/storage/store_selector.dart';
 import 'package:catodo/features/data/models/focus_session_model.dart';
 import 'package:catodo/features/data/models/latest-activity-model.dart';
 import 'package:catodo/features/data/datasources/focus_session_datasource.dart';
@@ -46,19 +46,8 @@ class DatabaseService {
     return backend;
   }
 
-  /// 실행 환경에 맞는 [KeyValueStore]를 고른다.
-  ///
-  /// 앱인토스 웹뷰에서는 네이티브 저장소로 브릿지되는 Storage API를 써야 하지만
-  /// (IndexedDB 7일 삭제 정책 회피), 그 어댑터는 아직 없다. 지금은 전 환경이
-  /// [SharedPreferencesStore]로 fallback한다.
-  Future<KeyValueStore> _createBackend() async {
-    final store = SharedPreferencesStore();
-    await store.init();
-    return store;
-  }
-
   Future<void> setUpDB() async {
-    final backend = await _createBackend();
+    final backend = await createDefaultKeyValueStore();
     _backend = backend;
 
     // store
